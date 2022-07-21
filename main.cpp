@@ -11,12 +11,12 @@ int main(int argc,char *argv[]){
     std::cout << "-----NB_server start run------" << std::endl;
 
     Config config;
-    config.parse_arg(argc,argv);
+    // config.parse_arg(argc,argv);
 
 
-    NB_WebServer NB_server;
+    // NB_WebServer NB_server;
     // server.init()
 
-    NB_server.log_write();  // 开启日志写
+    // NB_server.log_write();  // 开启日志写
     return 0;
 }
