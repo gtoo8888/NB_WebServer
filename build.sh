@@ -8,10 +8,10 @@ OUTPUT=output
 
 # 使用cmake编译
 # echo "使用cmake编译"
-if [ -z ${OUTPUT} ];then
+if [ ! -d ${OUTPUT} ];then
     mkdir ${OUTPUT}
 fi
-if [ -z build ];then
+if [ ! -d build ];then
     mkdir build
 fi
 
