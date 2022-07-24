@@ -16,9 +16,12 @@ Ubuntu 20.04.3 LTS
 
 Linux version 5.13.0-48-generic
 
+
 ## 编译方法
 ./build.sh  这是shell脚本，里面调用cmake进行编译
 那个makefile是一个假的makefile，用来清理文件
+
+
 
 ## 远程连接，vscode 调试方法
 通过launch.json调用task.json，生成可执行文件

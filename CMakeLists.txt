@@ -35,3 +35,7 @@ target_link_libraries(${PROJECT_NAME} mysqlclient)
 
 
 
+
+add_executable(NB_webserve /
+                main.cpp NB_config.cpp )
+

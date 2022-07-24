@@ -21,6 +21,7 @@ int main(int argc,char *argv[]){
     system(command.c_str());
 
 
+
     MYSQL *conn = NULL;
     conn = mysql_init(conn);
 
@@ -49,6 +50,7 @@ int main(int argc,char *argv[]){
     /* 断开连接 */
     mysql_free_result(res);
     mysql_close(conn);
+
 
 
     // if(con == NULL){
