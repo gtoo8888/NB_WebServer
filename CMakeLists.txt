@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(NB_webserve VERSION 0.1.0 LANGUAGES CXX)
 # project(NB_webserve VERSION 0.1.0 )
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 # set(CMAKE_CXX_FLAGS -pthread)
 
 # REQUIRED：可选字段。表示一定要找到包，找不到的话就立即停掉整个CMake。而如果不指定REQUIRED则CMake会继续执行。
@@ -36,6 +36,6 @@ target_link_libraries(${PROJECT_NAME} mysqlclient)
 
 
 
-add_executable(NB_webserve /
-                main.cpp NB_config.cpp )
+# add_executable(NB_webserve /
+#                 main.cpp NB_config.cpp )
 
