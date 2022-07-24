@@ -7,4 +7,4 @@ set(CMAKE_CXX_STANDARD 11)
 
 
 add_executable(NB_webserve /
-                main.cpp config.cpp webserver.cpp)
+                main.cpp NB_config.cpp )

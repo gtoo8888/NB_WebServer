@@ -5,13 +5,15 @@
 # make server
 
 使用cmake编译
+mkdir output
 mkdir build
 cd build
-cmake ..
+cmake .. -DCMAKE_BUILD_TYPE=Debug
 make 
-./NB_webserve
 ls -l NB_webserve
 cd -
+
+# ./build/NB_webserve
 
 
 
