@@ -3,8 +3,26 @@
 #include <string>
 #include <stdio.h>
 #include <sstream>
+#include <memory> //shared_ptr
 #include "NB_config.h"
+#include "test/NB_test.h"
 #include <mysql/mysql.h>
+// #include <QDebug>
+// #include <QObject>
+// #include <QTimer>
+
+
+
+void test_namespace(){  // 对命名空间使用的测试
+    // NB_init_test::NB_test *NBNB_test;
+    // NBNB_test->test_shared_ptr();
+    NB_init_test::test_namespace1();
+    std::cout << NB_init_test::test3 << std::endl;
+
+    // NB_init_test::NB_test::test_shared_ptr()    // 这样的用法是错误的，这是一个非静态对象，一定要用它的实例去调用它
+    NB_init_test::NB_test main_NB_test;             
+    main_NB_test.test_shared_ptr();
+}
 
 int main(int argc,char *argv[]){
     std::string user = "root";
@@ -17,13 +35,11 @@ int main(int argc,char *argv[]){
     config.parse_arg(argc,argv);
 
 
-    std::string folderPath = "lalalatest"; 
-
-    std::string command;
-    command = "touch " + folderPath;  
-    system(command.c_str());
-
-
+    // test_namespace(); // 对命名空间使用的测试,正常应该注释掉
+    NB_init_test::NB_test main_test;
+    main_test.test_shared_ptr();
+    main_test.test_system_common();
+    // qDebug() << QString("imagesNum:%1, ").arg(123)
 
     MYSQL *conn = NULL;
     conn = mysql_init(conn);
@@ -31,7 +47,6 @@ int main(int argc,char *argv[]){
     int port = 3306;
     MYSQL_RES *res;
     MYSQL_ROW row;
-
 
     /* 连接数据库 */
     if (!mysql_real_connect(conn, "localhost", user.c_str(), passwd.c_str(), databasename.c_str(), port, NULL, 0)) {
@@ -42,18 +57,17 @@ int main(int argc,char *argv[]){
     printf("%ld\n",__cplusplus);
 
     for(int i = 0;i < 100;i++) {
-        char name[100];
-        char password[100];
+        char name[100] = "33";
+        char password[100] = "454";
         std::string test;
 
+        // std::ostringstream ostr,ostr2;
+        // ostr << i+1;
+        // std::string astr1 = ostr.str();
+        // ostr2 << i;
+        // std::string astr2 = ostr2.str();
 
-        std::ostringstream ostr,ostr2;
-        ostr << i+1;
-        std::string astr1 = ostr.str();
-        ostr2 << i;
-        std::string astr2 = ostr2.str();
-
-        test = astr1 + "&" +  astr2;
+        // test = astr1 + "&" +  astr2;
 
         // char *m_string = &test[0]; //存储请求头数据
         // int j = 0;
