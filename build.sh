@@ -16,10 +16,12 @@ if [ ! -d build ];then
 fi
 
 cd build
-cmake .. -DCMAKE_BUILD_TYPE=Debug
-make 
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=.
+make -j${nproc}
+make install
 ls -l NB_webserve
 cd -
+# ./getCodeNum.sh   // 统计代码行数的
 
 # ./build/NB_webserve
 

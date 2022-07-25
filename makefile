@@ -5,5 +5,5 @@ server : main.cpp
 
 
 clean:
-	rm -r build
-	rm -r output
+	rm -rf build
+	rm -rf output

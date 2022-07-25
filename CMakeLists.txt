@@ -17,11 +17,15 @@ set(CMAKE_CXX_STANDARD 17)
 
 message(STATUS "CMAKE_MODULE_PATH = ${CMAKE_ROOT}")
 
-file(GLOB_RECURSE LOG_SRC_LIST "/log/*.cpp" "/log/*h")
+file(GLOB_RECURSE LOG_SRC_LIST "/log/*.cpp" "/log/*.h")
 source_group(logserver FILES ${LOG_SRC_LIST})
+
+file(GLOB_RECURSE TEST_SRC_LIST "/test/*.cpp" "/test/*.h")
+source_group(testserver FILES ${TEST_SRC_LIST})
 
 add_executable(${PROJECT_NAME}
     ${LOG_SRC_LIST}
+    ${TEST_SRC_LIST}
     main.cpp
     NB_config.cpp
 )
@@ -30,12 +34,30 @@ add_executable(${PROJECT_NAME}
 # find_package(MySQL CONFIG REQUIRED)
 # target_link_libraries(${PROJECT_NAME} PRIVATE gRPC::grpc++ gRPC::grpc gRPC::gpr)
 
+# MySQL
 include_directories(/usr/include/mysql)
 target_link_libraries(${PROJECT_NAME} mysqlclient)
 
-
+# Qt5
+# find_package(Qt5 COMPONENTS Core Network Concurrent REQUIRED) 
+# target_link_libraries(${PROJECT_NAME} PRIVATE Qt5::Core Qt5::CorePrivate Qt5::Network Qt5::Concurrent)
 
 
 # add_executable(NB_webserve /
 #                 main.cpp NB_config.cpp )
+
+
+# install(TARGETS ${PROJECT_NAME}
+#         CONFIGURATIONS Debug
+#         RUNTIME DESTINATION Debug/bin)
+# install(TARGETS ${PROJECT_NAME}
+#         CONFIGURATIONS Release
+#         RUNTIME DESTINATION Release/bin)
+
+install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}     # 可执行二进制文件
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}     # 动态库
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}     # 静态库
+    OBJECTS DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
 
