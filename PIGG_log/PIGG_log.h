@@ -18,8 +18,12 @@ public:
     static void *flush_log_thread(void *args){
         // PIGG_log::get_instance()->async_write_log();
     }
-    void log_write();
-    void sql_pool();
+    // 强制刷新缓冲区
+    void flush(void);   
+    // 输出文件名,是否开启日志，日志缓冲区大小，分割线，最大队列长度
+    bool init(const char* file_name,int close_log,int log_buf_size,int split_lines,int max_queue_size);
+    // 输入日志等级、日志形式
+    void write_log(int level,const char *format, ...);  
 
 private:
     PIGG_log();

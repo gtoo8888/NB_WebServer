@@ -21,8 +21,11 @@ void test_namespace(){  // 对命名空间使用的测试
     std::cout << PIGG_init_test::test3 << std::endl;
 
     // PIGG_init_test::PIGG_test::test_shared_ptr()    // 这样的用法是错误的，这是一个非静态对象，一定要用它的实例去调用它
-    PIGG_init_test::PIGG_test main_PIGG_test;             
+    PIGG_init_test::PIGG_test main_PIGG_test;        // 普通的生成一个类的实例的调用方法     
     main_PIGG_test.test_shared_ptr();
+
+    // std::shared_ptr<PIGG_init_test::PIGG_test> main_test = std::make_shared<PIGG_init_test::PIGG_test>();   // 制造了一个智能指针调用方法
+    // main_test->test_shared_ptr();        // 这样的使用方式不好调试
 }
 
 int main(int argc,char *argv[]){
@@ -37,9 +40,8 @@ int main(int argc,char *argv[]){
 
 
     // test_namespace(); // 对命名空间使用的测试,正常应该注释掉
-    PIGG_init_test::PIGG_test main_test;
-    main_test.test_shared_ptr();
-    main_test.test_system_common();
+    PIGG_init_test::PIGG_test main_PIGG_test;        // 普通的生成一个类的实例的调用方法     
+    main_PIGG_test.test_fflush();
     // qDebug() << QString("imagesNum:%1, ").arg(123)
 
     MYSQL *conn = NULL;
@@ -55,11 +57,6 @@ int main(int argc,char *argv[]){
         return -1;
     }
 
-    printf("%ld\n",__cplusplus);
-    printf("%ld\n",__cplusplus);
-    printf("%ld\n",__cplusplus);
-    printf("%ld\n",__cplusplus);
-    
 
     for(int i = 0;i < 100;i++) {
         char name[100] = "33";

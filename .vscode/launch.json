@@ -13,7 +13,7 @@
             "program": "${workspaceFolder}/build/PIGG_webserve",   //可执行文件的路径和文件名称
             "args": [],                 //主函数调用时传入的参数
             "stopAtEntry": false,       //设为true时程序将暂停在程序入口处
-            "cwd": "${workspaceFolder}/output",    //调试时的工作目录
+            "cwd": "${workspaceFolder}/PIGG_output",    //调试时的工作目录
             "environment": [],          //不知道干嘛的
             "internalConsoleOptions": "openOnSessionStart",
             "externalConsole": false,   //调试时是否显示控制台窗口

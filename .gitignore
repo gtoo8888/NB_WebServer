@@ -1,7 +1,8 @@
 build/
 CMakeFiles/
-output/
+PIGG_output/
 .vscode/*.log
+.vscode/settings.json
 
 
 
