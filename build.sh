@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OUTPUT=output
+OUTPUT=PIGG_output
 # 使用makefile编译
 # chmod +x makefile
 # make server
@@ -19,11 +19,11 @@ cd build
 cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=.
 make -j${nproc}
 make install
-ls -l NB_webserve
+ls -lh PIGG_webserve
 cd -
 # ./getCodeNum.sh   // 统计代码行数的
 
-# ./build/NB_webserve
+# ./build/PIGG_webserve
 
 
 

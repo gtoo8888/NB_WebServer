@@ -1,11 +1,11 @@
-#ifndef _NB_TEST_H_
-#define _NB_TEST_H_
+#ifndef _PIGG_TEST_H_
+#define _PIGG_TEST_H_
 
 
 #include <iostream>
 #include <memory>
 // 如果想要写的函数被主函数中使用，需要在.h的命名空间中定义，在.cpp中定义不会被获取到
-namespace NB_init_test{ // 测试的命名空间
+namespace PIGG_init_test{ // 测试的命名空间
 
 
 
@@ -16,22 +16,22 @@ void test_namespace1(){
 }
 
 
-class NB_test{
+class PIGG_test{
 public:
-    NB_test();
-    ~NB_test();
+    PIGG_test();
+    ~PIGG_test();
     void test_shared_ptr();
     void test_system_common();
 };
 
-NB_test::NB_test(){
+PIGG_test::PIGG_test(){
     ;
 }
-NB_test::~NB_test(){
+PIGG_test::~PIGG_test(){
 
 }
 
-void NB_test::test_shared_ptr(){    // 智能指针测试
+void PIGG_test::test_shared_ptr(){    // 智能指针测试
     std::cout << "test_shared_ptr" << std::endl;
 
     std::shared_ptr<int> s_ptr = std::make_shared<int>(8);
@@ -42,7 +42,7 @@ void NB_test::test_shared_ptr(){    // 智能指针测试
 }
 
 
-void NB_test::test_system_common(){// 系统命令的测试
+void PIGG_test::test_system_common(){// 系统命令的测试
     std::cout << "test_system_common" << std::endl;
 
     std::string folderPath = "lalalatest"; 

@@ -1,13 +1,13 @@
-#ifndef NB_WEBSERVER_H
-#define NB_WEBSERVER_H
+#ifndef PIGG_WEBSERVER_H
+#define PIGG_WEBSERVER_H
 
 #include <iostream>
 
 
-class NB_WebServer{
+class PIGG_WebServer{
 public:
-    NB_WebServer();
-    ~NB_WebServer();
+    PIGG_WebServer();
+    ~PIGG_WebServer();
 
     void log_write();
     void sql_pool();

@@ -6,4 +6,4 @@ server : main.cpp
 
 clean:
 	rm -rf build
-	rm -rf output
+	rm -rf PIGG_output

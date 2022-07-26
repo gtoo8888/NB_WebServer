@@ -1,4 +1,4 @@
-#include "NB_config.h"
+#include "PIGG_config.h"
 
 Config::Config(){
     PORT = 9006;               //端口号,默认9006
@@ -15,7 +15,7 @@ Config::Config(){
 
 
 void usage(){
-    std::cout << "Usage: NB_s -e/-d key [input-file] [output-file]" << std::endl;
+    std::cout << "Usage: PIGG_s -e/-d key [input-file] [output-file]" << std::endl;
 }
 
 
