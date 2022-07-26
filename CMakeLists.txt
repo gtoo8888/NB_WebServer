@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
-project(NB_webserve VERSION 0.1.0 LANGUAGES CXX)
-# project(NB_webserve VERSION 0.1.0 )
+project(PIGG_webserve VERSION 0.1.0 LANGUAGES CXX)
+# project(PIGG_webserve VERSION 0.1.0 )
 
 set(CMAKE_CXX_STANDARD 17)
 # set(CMAKE_CXX_FLAGS -pthread)
@@ -17,17 +17,17 @@ set(CMAKE_CXX_STANDARD 17)
 
 message(STATUS "CMAKE_MODULE_PATH = ${CMAKE_ROOT}")
 
-file(GLOB_RECURSE LOG_SRC_LIST "/log/*.cpp" "/log/*.h")
+file(GLOB_RECURSE LOG_SRC_LIST "/PIGG_log/*.cpp" "/PIGG_log/*.h")
 source_group(logserver FILES ${LOG_SRC_LIST})
 
-file(GLOB_RECURSE TEST_SRC_LIST "/test/*.cpp" "/test/*.h")
+file(GLOB_RECURSE TEST_SRC_LIST "/PIGG_test/*.cpp" "/PIGG_test/*.h")
 source_group(testserver FILES ${TEST_SRC_LIST})
 
 add_executable(${PROJECT_NAME}
     ${LOG_SRC_LIST}
     ${TEST_SRC_LIST}
     main.cpp
-    NB_config.cpp
+    PIGG_config.cpp
 )
 
 
@@ -43,8 +43,8 @@ target_link_libraries(${PROJECT_NAME} mysqlclient)
 # target_link_libraries(${PROJECT_NAME} PRIVATE Qt5::Core Qt5::CorePrivate Qt5::Network Qt5::Concurrent)
 
 
-# add_executable(NB_webserve /
-#                 main.cpp NB_config.cpp )
+# add_executable(PIGG_webserve /
+#                 main.cpp PIGG_config.cpp )
 
 
 # install(TARGETS ${PROJECT_NAME}

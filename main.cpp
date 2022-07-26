@@ -4,8 +4,9 @@
 #include <stdio.h>
 #include <sstream>
 #include <memory> //shared_ptr
-#include "NB_config.h"
-#include "test/NB_test.h"
+#include "PIGG_config.h"
+#include "PIGG_log/PIGG_log.h"
+#include "PIGG_test/PIGG_test.h"
 #include <mysql/mysql.h>
 // #include <QDebug>
 // #include <QObject>
@@ -14,14 +15,14 @@
 
 
 void test_namespace(){  // 对命名空间使用的测试
-    // NB_init_test::NB_test *NBNB_test;
-    // NBNB_test->test_shared_ptr();
-    NB_init_test::test_namespace1();
-    std::cout << NB_init_test::test3 << std::endl;
+    // PIGG_init_test::PIGG_test *NBPIGG_test;
+    // NBPIGG_test->test_shared_ptr();
+    PIGG_init_test::test_namespace1();
+    std::cout << PIGG_init_test::test3 << std::endl;
 
-    // NB_init_test::NB_test::test_shared_ptr()    // 这样的用法是错误的，这是一个非静态对象，一定要用它的实例去调用它
-    NB_init_test::NB_test main_NB_test;             
-    main_NB_test.test_shared_ptr();
+    // PIGG_init_test::PIGG_test::test_shared_ptr()    // 这样的用法是错误的，这是一个非静态对象，一定要用它的实例去调用它
+    PIGG_init_test::PIGG_test main_PIGG_test;             
+    main_PIGG_test.test_shared_ptr();
 }
 
 int main(int argc,char *argv[]){
@@ -29,14 +30,14 @@ int main(int argc,char *argv[]){
     std::string passwd = "root";
     std::string databasename = "yourdb";
 
-    std::cout << "-----NB_server start run------" << std::endl;
+    std::cout << "-----PIGG_server start run------" << std::endl;
 
     Config config;
     config.parse_arg(argc,argv);
 
 
     // test_namespace(); // 对命名空间使用的测试,正常应该注释掉
-    NB_init_test::NB_test main_test;
+    PIGG_init_test::PIGG_test main_test;
     main_test.test_shared_ptr();
     main_test.test_system_common();
     // qDebug() << QString("imagesNum:%1, ").arg(123)
@@ -55,6 +56,10 @@ int main(int argc,char *argv[]){
     }
 
     printf("%ld\n",__cplusplus);
+    printf("%ld\n",__cplusplus);
+    printf("%ld\n",__cplusplus);
+    printf("%ld\n",__cplusplus);
+    
 
     for(int i = 0;i < 100;i++) {
         char name[100] = "33";
@@ -126,10 +131,10 @@ int main(int argc,char *argv[]){
     // }
 
 
-    // NB_WebServer NB_server;
+    // PIGG_WebServer PIGG_server;
     // server.init()
 
-    // NB_server.log_write();  // 开启日志写
+    // PIGG_server.log_write();  // 开启日志写
     return 0;
 }
 

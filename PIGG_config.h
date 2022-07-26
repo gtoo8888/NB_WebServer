@@ -1,10 +1,10 @@
-#ifndef NB_CONFIG_H
-#define NB_CONFIG_H
+#ifndef PIGG_CONFIG_H
+#define PIGG_CONFIG_H
 
 
 
 
-#include "NB_webserver.h"
+#include "PIGG_webserver.h"
 class Config{
 public:
     Config();

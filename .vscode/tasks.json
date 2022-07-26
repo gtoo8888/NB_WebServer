@@ -23,7 +23,7 @@
         //     "args": [
         //         "-g",
         //         "${workspaceFolder}/main.cpp",
-        //         "${workspaceFolder}/NB_config.cpp",
+        //         "${workspaceFolder}/PIGG_config.cpp",
         //         "${workspaceFolder}/mysql.h",
         //         "-o",
         //         "${fileDirname}/${fileBasenameNoExtension}"
