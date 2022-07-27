@@ -5,10 +5,10 @@
 
 
 #include "PIGG_webserver.h"
-class Config{
+class PIGG_Config{
 public:
-    Config();
-    ~Config(){};
+    PIGG_Config();
+    ~PIGG_Config(){};
 
     void parse_arg(int arg,char *argv[]);
 

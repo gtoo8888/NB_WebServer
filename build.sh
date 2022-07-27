@@ -18,7 +18,7 @@ fi
 cd build
 cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=.
 make -j${nproc}
-make install
+# make install
 ls -lh PIGG_webserve
 cd -
 # ./getCodeNum.sh   // 统计代码行数的

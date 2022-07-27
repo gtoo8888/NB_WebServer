@@ -1,6 +1,6 @@
 #include "PIGG_config.h"
 
-Config::Config(){
+PIGG_Config::PIGG_Config(){
     PORT = 9006;               //端口号,默认9006
     LOGWrite = 0;           //日志写入方式，默认同步
     TRIGMode = 0;            //触发组合模式,默认listenfd LT + connfd LT
@@ -19,7 +19,7 @@ void usage(){
 }
 
 
-void Config::parse_arg(int argc,char *argv[]){
+void PIGG_Config::parse_arg(int argc,char *argv[]){
     if(argc <= 1)
     {
         usage();

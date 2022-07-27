@@ -3,7 +3,7 @@ project(PIGG_webserve VERSION 0.1.0 LANGUAGES CXX)
 # project(PIGG_webserve VERSION 0.1.0 )
 
 set(CMAKE_CXX_STANDARD 17)
-# set(CMAKE_CXX_FLAGS -pthread)
+set(CMAKE_CXX_FLAGS -pthread) # 开了创建线程什么的，一定要开这个
 
 # REQUIRED：可选字段。表示一定要找到包，找不到的话就立即停掉整个CMake。而如果不指定REQUIRED则CMake会继续执行。
 
@@ -17,10 +17,10 @@ set(CMAKE_CXX_STANDARD 17)
 
 message(STATUS "CMAKE_MODULE_PATH = ${CMAKE_ROOT}")
 
-file(GLOB_RECURSE LOG_SRC_LIST "/PIGG_log/*.cpp" "/PIGG_log/*.h")
+file(GLOB_RECURSE LOG_SRC_LIST "PIGG_log/*.cpp" "PIGG_log/*.h")  # 不能写成/PIGG_log/*.cpp这样成了在根目录下寻找
 source_group(logserver FILES ${LOG_SRC_LIST})
 
-file(GLOB_RECURSE TEST_SRC_LIST "/PIGG_test/*.cpp" "/PIGG_test/*.h")
+file(GLOB_RECURSE TEST_SRC_LIST "PIGG_test/*.cpp" "PIGG_test/*.h")
 source_group(testserver FILES ${TEST_SRC_LIST})
 
 add_executable(${PROJECT_NAME}
@@ -28,6 +28,7 @@ add_executable(${PROJECT_NAME}
     ${TEST_SRC_LIST}
     main.cpp
     PIGG_config.cpp
+    PIGG_webserver.cpp
 )
 
 
@@ -54,10 +55,11 @@ target_link_libraries(${PROJECT_NAME} mysqlclient)
 #         CONFIGURATIONS Release
 #         RUNTIME DESTINATION Release/bin)
 
-install(TARGETS ${PROJECT_NAME}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}     # 可执行二进制文件
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}     # 动态库
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}     # 静态库
-    OBJECTS DESTINATION ${CMAKE_INSTALL_LIBDIR}
-)
+# 暂时先不安装，减少报错量，不然两遍报错
+# install(TARGETS ${PROJECT_NAME}
+#     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}     # 可执行二进制文件
+#     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}     # 动态库
+#     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}     # 静态库
+#     OBJECTS DESTINATION ${CMAKE_INSTALL_LIBDIR}
+# )
 

@@ -8,25 +8,29 @@
 #include "PIGG_log/PIGG_log.h"
 #include "PIGG_test/PIGG_test.h"
 #include <mysql/mysql.h>
+
+
+
+#include "PIGG_config.h"
 // #include <QDebug>
 // #include <QObject>
 // #include <QTimer>
 
 
 
-void test_namespace(){  // 对命名空间使用的测试
-    // PIGG_init_test::PIGG_test *NBPIGG_test;
-    // NBPIGG_test->test_shared_ptr();
-    PIGG_init_test::test_namespace1();
-    std::cout << PIGG_init_test::test3 << std::endl;
+// void test_namespace(){  // 对命名空间使用的测试
+//     // PIGG_init_test::PIGG_test *NBPIGG_test;
+//     // NBPIGG_test->test_shared_ptr();
+//     // PIGG_init_test::test_namespace1();
+//     // std::cout << "PIGG_init_test::test3" << std::endl;
 
-    // PIGG_init_test::PIGG_test::test_shared_ptr()    // 这样的用法是错误的，这是一个非静态对象，一定要用它的实例去调用它
-    PIGG_init_test::PIGG_test main_PIGG_test;        // 普通的生成一个类的实例的调用方法     
-    main_PIGG_test.test_shared_ptr();
+//     // PIGG_init_test::PIGG_test::test_shared_ptr()    // 这样的用法是错误的，这是一个非静态对象，一定要用它的实例去调用它
+//     // PIGG_init_test::PIGG_test main_PIGG_test;        // 普通的生成一个类的实例的调用方法     
+//     // main_PIGG_test.test_shared_ptr();
 
-    // std::shared_ptr<PIGG_init_test::PIGG_test> main_test = std::make_shared<PIGG_init_test::PIGG_test>();   // 制造了一个智能指针调用方法
-    // main_test->test_shared_ptr();        // 这样的使用方式不好调试
-}
+//     // std::shared_ptr<PIGG_init_test::PIGG_test> main_test = std::make_shared<PIGG_init_test::PIGG_test>();   // 制造了一个智能指针调用方法
+//     // main_test->test_shared_ptr();        // 这样的使用方式不好调试
+// }
 
 int main(int argc,char *argv[]){
     std::string user = "root";
@@ -35,13 +39,26 @@ int main(int argc,char *argv[]){
 
     std::cout << "-----PIGG_server start run------" << std::endl;
 
-    Config config;
-    config.parse_arg(argc,argv);
+    // 解析命令行
+    PIGG_Config PIGG_config;
+    PIGG_config.parse_arg(argc,argv);
 
+
+    // 参数初始化
+    PIGG_WebServer server;
+    server.init(1,1);
+    std::cout << "-----PPIGG_WebServer::init()------" << std::endl;
+    server.log_write();
+    std::cout << "-----PPIGG_WebServer::log_write()------" << std::endl;
+
+    LOG_DEBUG("%s", "dealclientdata failure");
+    LOG_INFO("deal with the client(%s)", "inet_ntoa(users[sockfd].get_address()->sin_addr)");
+    LOG_INFO("request:%s"," m_write_buf");
+    LOG_ERROR("MySQL Error");
 
     // test_namespace(); // 对命名空间使用的测试,正常应该注释掉
     PIGG_init_test::PIGG_test main_PIGG_test;        // 普通的生成一个类的实例的调用方法     
-    main_PIGG_test.test_fflush();
+    // main_PIGG_test.test_fflush();
     // qDebug() << QString("imagesNum:%1, ").arg(123)
 
     MYSQL *conn = NULL;
