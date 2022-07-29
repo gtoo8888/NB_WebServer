@@ -10,6 +10,9 @@ OUTPUT=PIGG_output
 # echo "使用cmake编译"
 if [ ! -d ${OUTPUT} ];then
     mkdir ${OUTPUT}
+else
+    rm -r ${OUTPUT}         # 调试的时候使用
+    mkdir ${OUTPUT}
 fi
 if [ ! -d build ];then
     mkdir build

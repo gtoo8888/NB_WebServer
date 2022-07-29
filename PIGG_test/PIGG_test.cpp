@@ -56,4 +56,12 @@ void PIGG_test::test_cppversion(){
     printf("cpp version : %ld\n",__cplusplus);
 }
 
+void PIGG_test::test_log(){
+    LOG_DEBUG("LOG_DEBUG %s","test1");
+    LOG_INFO("LOG_INFO %s", "test2");
+    LOG_WARN("LOG_WARN %s", "test3");
+    LOG_ERROR("LOG_ERROR %s", "test4");
+}
+
+
 }
