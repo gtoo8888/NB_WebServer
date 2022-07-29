@@ -3,6 +3,7 @@
 
 
 #include <iostream>
+#include "../PIGG_log/PIGG_log.h"
 // 如果想要写的函数被主函数中使用，需要在.h的命名空间中定义，在.cpp中定义不会被获取到
 namespace PIGG_init_test{ // 测试的命名空间
 
@@ -20,6 +21,7 @@ public:
     void test_system_common();
     void test_fflush();
     void test_cppversion();
+    void test_log();
 };
 
 // PIGG_test::PIGG_test(){

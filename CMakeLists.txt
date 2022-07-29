@@ -5,6 +5,7 @@ project(PIGG_webserve VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS -pthread) # 开了创建线程什么的，一定要开这个
 
+add_definitions(-w) # 忽略警告
 # REQUIRED：可选字段。表示一定要找到包，找不到的话就立即停掉整个CMake。而如果不指定REQUIRED则CMake会继续执行。
 
 # message(STATUS "CMAKE_PROJECT_NAME                  : ${CMAKE_PROJECT_NAME}")       # 非重要消息；
@@ -23,9 +24,14 @@ source_group(logserver FILES ${LOG_SRC_LIST})
 file(GLOB_RECURSE TEST_SRC_LIST "PIGG_test/*.cpp" "PIGG_test/*.h")
 source_group(testserver FILES ${TEST_SRC_LIST})
 
+file(GLOB_RECURSE LOCKER_SRC_LIST "PIGG_locker/*.cpp" "PIGG_locker/*.h")
+source_group(testserver FILES ${LOCKER_SRC_LIST})
+
+
 add_executable(${PROJECT_NAME}
     ${LOG_SRC_LIST}
     ${TEST_SRC_LIST}
+    ${LOCKER_SRC_LIST}
     main.cpp
     PIGG_config.cpp
     PIGG_webserver.cpp

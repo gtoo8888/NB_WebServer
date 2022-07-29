@@ -7,9 +7,8 @@
 #include "PIGG_config.h"
 #include "PIGG_log/PIGG_log.h"
 #include "PIGG_test/PIGG_test.h"
+#include "PIGG_lock/PIGG_lock.h"
 #include <mysql/mysql.h>
-
-
 
 #include "PIGG_config.h"
 // #include <QDebug>
@@ -18,48 +17,25 @@
 
 
 
-// void test_namespace(){  // 对命名空间使用的测试
-//     // PIGG_init_test::PIGG_test *NBPIGG_test;
-//     // NBPIGG_test->test_shared_ptr();
-//     // PIGG_init_test::test_namespace1();
-//     // std::cout << "PIGG_init_test::test3" << std::endl;
+void test_namespace(){  // 对命名空间使用的测试
+    // PIGG_init_test::PIGG_test *NBPIGG_test;
+    // NBPIGG_test->test_shared_ptr();
+    // PIGG_init_test::test_namespace1();
+    // std::cout << "PIGG_init_test::test3" << std::endl;
 
-//     // PIGG_init_test::PIGG_test::test_shared_ptr()    // 这样的用法是错误的，这是一个非静态对象，一定要用它的实例去调用它
-//     // PIGG_init_test::PIGG_test main_PIGG_test;        // 普通的生成一个类的实例的调用方法     
-//     // main_PIGG_test.test_shared_ptr();
+    // PIGG_init_test::PIGG_test::test_shared_ptr()    // 这样的用法是错误的，这是一个非静态对象，一定要用它的实例去调用它
+    PIGG_init_test::PIGG_test main_PIGG_test;        // 普通的生成一个类的实例的调用方法     
+    main_PIGG_test.test_shared_ptr();
+    main_PIGG_test.test_log();
 
-//     // std::shared_ptr<PIGG_init_test::PIGG_test> main_test = std::make_shared<PIGG_init_test::PIGG_test>();   // 制造了一个智能指针调用方法
-//     // main_test->test_shared_ptr();        // 这样的使用方式不好调试
-// }
+    // std::shared_ptr<PIGG_init_test::PIGG_test> main_test = std::make_shared<PIGG_init_test::PIGG_test>();   // 制造了一个智能指针调用方法
+    // main_test->test_shared_ptr();        // 这样的使用方式不好调试
+}
 
-int main(int argc,char *argv[]){
+void test_mysql(){
     std::string user = "root";
     std::string passwd = "root";
     std::string databasename = "yourdb";
-
-    std::cout << "-----PIGG_server start run------" << std::endl;
-
-    // 解析命令行
-    PIGG_Config PIGG_config;
-    PIGG_config.parse_arg(argc,argv);
-
-
-    // 参数初始化
-    PIGG_WebServer server;
-    server.init(1,1);
-    std::cout << "-----PPIGG_WebServer::init()------" << std::endl;
-    server.log_write();
-    std::cout << "-----PPIGG_WebServer::log_write()------" << std::endl;
-
-    LOG_DEBUG("%s", "dealclientdata failure");
-    LOG_INFO("deal with the client(%s)", "inet_ntoa(users[sockfd].get_address()->sin_addr)");
-    LOG_INFO("request:%s"," m_write_buf");
-    LOG_ERROR("MySQL Error");
-
-    // test_namespace(); // 对命名空间使用的测试,正常应该注释掉
-    PIGG_init_test::PIGG_test main_PIGG_test;        // 普通的生成一个类的实例的调用方法     
-    // main_PIGG_test.test_fflush();
-    // qDebug() << QString("imagesNum:%1, ").arg(123)
 
     MYSQL *conn = NULL;
     conn = mysql_init(conn);
@@ -71,13 +47,13 @@ int main(int argc,char *argv[]){
     /* 连接数据库 */
     if (!mysql_real_connect(conn, "localhost", user.c_str(), passwd.c_str(), databasename.c_str(), port, NULL, 0)) {
         std::cout << mysql_error(conn);
-        return -1;
+        return ;
     }
 
 
     for(int i = 0;i < 100;i++) {
-        char name[100] = "33";
-        char password[100] = "454";
+        char name[100] = "56";
+        char password[100] = "TTT";
         std::string test;
 
         // std::ostringstream ostr,ostr2;
@@ -110,7 +86,7 @@ int main(int argc,char *argv[]){
         if(mysql_query(conn, sql_insert))
         {
             std::cout << mysql_error(conn);
-            return -1;
+            return ;
         }
     }
 
@@ -118,7 +94,7 @@ int main(int argc,char *argv[]){
     /* 查询语句 */
     if (mysql_query(conn, "select * from user")) {
         std::cout << mysql_error(conn);
-        return -2;
+        return ;
     }
  
     res = mysql_use_result(conn);
@@ -131,24 +107,39 @@ int main(int argc,char *argv[]){
     /* 断开连接 */
     mysql_free_result(res);
     mysql_close(conn);
+}
+
+int main(int argc,char *argv[]){
+    std::string user = "root";
+    std::string passwd = "root";
+    std::string databasename = "yourdb";
+
+    std::cout << "-----PIGG_server start run------" << std::endl;
+
+    // 解析命令行
+    PIGG_Config PIGG_config;
+    PIGG_config.parse_arg(argc,argv);
 
 
+    // 参数初始化
+    PIGG_WebServer server;
+    server.init(true,true);
+    std::cout << "-----PPIGG_WebServer::init()------" << std::endl;
+    server.log_write();
+    std::cout << "-----PPIGG_WebServer::log_write()------" << std::endl;
 
-    // if(con == NULL){
-    //     exit(1);
+    // for (int i = 0;i < 100;i++)  {
+    //     LOG_INFO("deal with the%s:%d", "timer tick",i);
     // }
-    // int port = 8000;
-    // con = mysql_real_connect(con,"localhost",user.c_str(),passwd.c_str(),databasename.c_str(),port,NULL,0);
-
-    // if(con == NULL){
-    //     exit(1);
-    // }
 
 
-    // PIGG_WebServer PIGG_server;
-    // server.init()
+    test_namespace(); // 对命名空间使用的测试,正常应该注释掉
+    PIGG_init_test::PIGG_test main_PIGG_test;        // 普通的生成一个类的实例的调用方法     
+    // main_PIGG_test.test_fflush();
+    // qDebug() << QString("imagesNum:%1, ").arg(123)
 
-    // PIGG_server.log_write();  // 开启日志写
+    // test_mysql();
+
     return 0;
 }
 
@@ -176,9 +167,6 @@ int main(int argc,char *argv[]){
 //     }
 //     std::cout << "插入数据成功,共插入：" <<mysql_affected_rows(&m_sqlCon)<<"行" << std::endl;
 // }
-
-
-
 
 // void insert(MYSQL* conn, int ID, char name[20], int age, float score)
 // //插入数据
