@@ -23,6 +23,22 @@ void PIGG_WebServer::log_write(){
         PIGG_log::get_instance()->init("./ServerLog",PIGG_close_log, 2000, 800000, 0);
     }
 }
-void PIGG_WebServer::sql_pool(){
+void PIGG_WebServer::init_sql_pool(){
 
+}
+
+void PIGG_WebServer::init_trig_mod(){
+    if (PIGG_trig_mode == 0) {          // LT+LT
+        PIGG_listen_trig_mode = 0;
+        PIGG_conn_trig_mode = 0;
+    }else if (PIGG_trig_mode == 1) {    // LT+ET
+        PIGG_listen_trig_mode = 0;
+        PIGG_conn_trig_mode = 1;
+    }else if (PIGG_trig_mode == 2) {    //ET+LT
+        PIGG_listen_trig_mode = 1;
+        PIGG_conn_trig_mode = 0;
+    }else if (PIGG_trig_mode == 3) {    //ET+ET
+        PIGG_listen_trig_mode = 1;
+        PIGG_conn_trig_mode = 1;
+    }
 }
