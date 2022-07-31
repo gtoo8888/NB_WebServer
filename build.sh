@@ -24,7 +24,10 @@ make -j${nproc}
 # make install
 ls -lh PIGG_webserve
 cd -
-# ./getCodeNum.sh   // 统计代码行数的
+
+if [ "$1"x == "len"x ];then # x为了防止变量为空时报错
+    ./getCodeNum.sh   # 统计代码行数
+fi
 
 # ./build/PIGG_webserve
 
