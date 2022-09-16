@@ -110,27 +110,29 @@ void test_mysql(){
 }
 
 int main(int argc,char *argv[]){
+    int port = 8888;
     std::string user = "root";
     std::string passwd = "root";
     std::string databasename = "yourdb";
 
     std::cout << "-----PIGG_server start run------" << std::endl;
-
     // 解析命令行
     PIGG_Config PIGG_config;
     PIGG_config.parse_arg(argc,argv);
 
-
     // 参数初始化
     PIGG_WebServer server;
-    server.init(true,true);
+    server.init(port, user, passwd, databasename, true, true);
     std::cout << "-----PPIGG_WebServer::init()------" << std::endl;
     server.log_write();
     std::cout << "-----PPIGG_WebServer::log_write()------" << std::endl;
-
-    // for (int i = 0;i < 100;i++)  {
-    //     LOG_INFO("deal with the%s:%d", "timer tick",i);
-    // }
+    server.init_trig_mod(0,0);    // 默认LT+LT,不选择优雅关闭
+    std::cout << "-----PPIGG_WebServer::init_trig_mod()------" << std::endl;
+    server.event_listen();      // socket通讯的基本流程，开始建立通讯
+    std::cout << "-----PPIGG_WebServer::event_listen()------" << std::endl;
+    std::cout << "-----enent_loop()start------" << std::endl;
+    server.event_loop();           // 整个主程序在这里循环
+    
 
 
     test_namespace(); // 对命名空间使用的测试,正常应该注释掉
