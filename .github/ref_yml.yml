@@ -1,0 +1,49 @@
+# 可以用做CI/CD持续集成，可以测试代码的问题
+name: WeChat-auto-send
+# 触发 workflow 的事件,workflow就是叫这个名字
+on:
+  workflow_dispatch:  # 手动触发工作流程
+  schedule:  # 事件允许您在计划的时间触发工作流程。
+    # 代表国际标准时间4点0分，北京时间需要+8小时，代表北京时间中午12点运行
+    - cron: '0 16 * * *'
+  push: # 当推送到指定分支的时候，触发构建流程
+    branches:
+      - 'main'
+env: # 设置环境变量
+  SERVER: production
+jobs:
+#将工作流程中运行的所有作业组合在一起
+  # my_love_job这个就是job_id
+  #定义名为 my-love-job 的作业。 子键将定义作业的属性 
+  my_love_job:    # 键值 job_id 是一个字符串 
+    name: my_love_job_change_name
+    runs-on: ubuntu-latest  # 选择要使用的镜像版本
+    # runs-on: ubuntu-20.04 # 这个也是可以的
+    steps: # 作业包含一系列任务，称为 steps
+      #使用checkout@v2这个action获取源码
+      # 使用action库  actions/checkout获取源码
+      - uses: actions/checkout@v2 # 要作为作业运行的可重用工作流程文件的位置和版本
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9.1
+      - name: install pip packages
+        run: |
+          python -m pip install --upgrade pip
+          pip3 install -r requirements.txt
+      - name: love-test-1
+        run: |
+          python3 main.py
+  my_love_job-2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print a greeting
+        env:
+          MY_VAR: 一定使用空格
+          FIST_NAME: pigg
+        run: |
+          echo ${MY_VAR} and $FIST_NAME
+
+
+  

@@ -14,7 +14,7 @@ Linux version 5.13.0-48-generic
 ## 需要安装的软件
 sudo apt-get install libmysqlclient-dev -y // mysql的头文件
 sudo apt-get install cmake -y
-sudo apt-get install gcc -y // gcc可能不全面，导致没有g++
+sudo apt-get install g++ -y // gcc可能不全面，导致没有g++
 
 ## 编译方法
 ./build.sh  这是shell脚本，里面调用cmake进行编译
