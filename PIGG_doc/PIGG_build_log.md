@@ -17,6 +17,11 @@ fix:使用阻塞队列插入，但是自己还没有实现阻塞队列的内容�
 ## 2022-7-30
 1. 实现了阻塞队列PIGG_block_queue.h和线程锁PIGG_lock.h，但是都还没有开始使用，现在都是没有线程不安全的
 
+## 2022-7-31
+1. 增加了mysql连接池的构造函数sql_connection_pool.h
+
+## 22022-9-16
+1. 修改CMake文件http和sql_connection加入编译，修改语法问题
 
 ## 注意事项
 1. 使用vscode远程登录调试的时候，需要用root身份登录，不然无法连接数据库
@@ -36,10 +41,13 @@ PIGG_log.cpp/.h
 PIGG_test.cpp/.h
 6. 补充基础模块，日志的阻塞队列+线程锁
 PIGG_block_queue.h+PIGG_lock.h
+7. http协议的处理
+PIGG_http.cpp/.h
 
 
 
-
+<!-- 8. mysql线程池
+sql_connection_pool.cpp/.h -->
 数据库可以最后再写上去，因为可以先不存到数据库
 
 # 参考文献

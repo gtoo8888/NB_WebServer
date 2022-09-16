@@ -6,14 +6,14 @@ PIGG_connection_pool::PIGG_connection_pool(){
 }
 
 //构造初始化
-void connection_pool::(string url, string User, string PassWord, string DatabaseName,
-              int Port, int MaxConn, int close_log){    
+void PIGG_connection_pool::init(std::string url, std::string User, std::string PassWord, std::string DatabaseName,
+                                int Port, int MaxConn, int close_log){    
     PIGG_url = url;
     PIGG_Port = Port;
     PIGG_User = User;
     PIGG_PassWord = PassWord;
     PIGG_Database_Name = DatabaseName;
-    PIGG_close_log = clos_log;
+    PIGG_close_log = close_log;
 
 }
 

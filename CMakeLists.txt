@@ -27,11 +27,18 @@ source_group(testserver FILES ${TEST_SRC_LIST})
 file(GLOB_RECURSE LOCKER_SRC_LIST "PIGG_locker/*.cpp" "PIGG_locker/*.h")
 source_group(testserver FILES ${LOCKER_SRC_LIST})
 
+file(GLOB_RECURSE MYSQL_SRC_LIST "CGImysql/*.cpp" "CGImysql/*.h")
+source_group(mysqlserver FILES ${LOCKER_SRC_LIST})
+
+file(GLOB_RECURSE HTTP_SRC_LIST "PIGG_http/*.cpp" "PIGG_http/*.h")
+source_group(httpserver FILES ${LOCKER_SRC_LIST})
 
 add_executable(${PROJECT_NAME}
     ${LOG_SRC_LIST}
     ${TEST_SRC_LIST}
     ${LOCKER_SRC_LIST}
+    ${MYSQL_SRC_LIST}
+    ${HTTP_SRC_LIST}
     main.cpp
     PIGG_config.cpp
     PIGG_webserver.cpp

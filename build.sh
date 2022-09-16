@@ -11,9 +11,10 @@ OUTPUT=PIGG_output
 if [ ! -d ${OUTPUT} ];then
     mkdir ${OUTPUT}
 else
-    rm -r ${OUTPUT}         # 调试的时候使用
+    rm -rf ${OUTPUT}         # 调试的时候使用
     mkdir ${OUTPUT}
 fi
+
 if [ ! -d build ];then
     mkdir build
 fi

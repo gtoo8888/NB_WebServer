@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 #include <list>
+#include <iostream> // 有这个才能使用std::string
+#include <mysql/mysql.h>
 #include "../PIGG_lock/PIGG_lock.h"
 
 class PIGG_connection_pool{
@@ -18,7 +20,7 @@ public:
         return &connPool;
     }
 
-    void init(string url, string User, string PassWord, string DatabaseName,
+    void init(std::string url, std::string User, std::string PassWord, std::string DatabaseName,
               int Port, int MaxConn, int close_log);
 
 private:
@@ -39,7 +41,7 @@ public:
     std::string PIGG_PassWord;      //登陆数据库密码
     std::string PIGG_Database_Name; //使用数据库名
     int PIGG_close_log;             //日志开关
-}
+};
 
 class PIGG_connection_RALL{
 public:
@@ -49,5 +51,6 @@ public:
 private:
     MYSQL *PIGG_conRAII;
     PIGG_connection_pool *poolRAII;
-}
+};
+
 #endif
