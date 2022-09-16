@@ -164,5 +164,10 @@ void PIGG_WebServer::dealwithread(int sockfd) {
 
 // 处理写
 void PIGG_WebServer::dealwithwrite(int sockfd) {
-
+    // reactor
+    // if (m_actor_model){
+    //     if (timer){
+    //         adjust_timer(timer);
+    //     }
+    // }
 }
