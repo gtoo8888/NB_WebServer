@@ -28,6 +28,8 @@ cd -
 
 if [ "$1"x == "len"x ];then # x为了防止变量为空时报错
     ./getCodeNum.sh   # 统计代码行数
+else   
+    echo "如果需要统计代码行数: ./build.sh len"
 fi
 
 # ./build/PIGG_webserve
