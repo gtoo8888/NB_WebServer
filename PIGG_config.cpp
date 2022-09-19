@@ -3,7 +3,7 @@
 PIGG_Config::PIGG_Config(){
     PORT = 9006;               //端口号,默认9006
     LOGWrite = 0;           //日志写入方式，默认同步
-    TRIGMode = 0;            //触发组合模式,默认listenfd LT + connfd LT
+    TrigMode = 0;            //触发组合模式,默认listenfd LT + connfd LT
     LISTENTrigmode = 0;         //listenfd触发模式，默认LT
     CONNTrigmode = 0;       //connfd触发模式，默认LT
     OPT_LINGER = 0;          //优雅关闭链接，默认不使用

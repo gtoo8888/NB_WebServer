@@ -5,10 +5,18 @@
 #include <iostream>
 #include <sys/epoll.h>  // EPOLLIN
 #include <arpa/inet.h>  // sockaddr_in
+#include <sys/stat.h>
 #include <cstring>
+#include <sys/mman.h>
+
+#include <sys/types.h>
+#include <sys/fcntl.h>
+#include <sys/unistd.h> // close()
+
 
 #include "../CGImysql/sql_connection_pool.h"
 #include "../PIGG_log/PIGG_log.h"
+#include "../PIGG_lock/PIGG_lock.h"
 
 
 class PIGG_http_conn{
@@ -29,12 +37,14 @@ public:
         PATH
     };
 
-    enum PIGG_CHECK_STATE{
-
+    enum PIGG_CHECK_STATE{          // 核对状态
+        CHECK_STATE_REQUEST_LINE = 0,
+        CHECK_STATE_HEADER,
+        CHECK_STATE_CONTENT
     };
 
     enum PIGG_HTTP_CODE{
-        NO_REQUEST,              
+        NO_REQUEST,             // 响应没有问题   
         GET_REQUEST,
         BAD_REQUEST,            // 坏的请求
         FORBIDDEN_REQUEST,      // 禁止请求 forbidden 
@@ -45,14 +55,16 @@ public:
     };
 
     enum PIGG_LINE_STATUS{
-
+        LINE_OK = 0,
+        LINE_BAD,
+        LINE_OPEN
     };
 public:
     PIGG_http_conn() {}
     ~PIGG_http_conn() {}
 
 public:
-    void init(int sockfd,const sockaddr_in &addr, char *root, int TRIGMode,int close_log, std::string user,std::string passwd,std::string sqlname);
+    void init(int sockfd,const sockaddr_in &addr, char *root, int TrigMode,int close_log, std::string user,std::string passwd,std::string sqlname);
     void close_conn(bool real_close);
     void process();
     bool read_once();
@@ -85,18 +97,46 @@ private:
     bool add_content(const char *content);
     bool process_write(PIGG_HTTP_CODE read_ret);
 
+    char *get_line() {return PIGG_read_buf + PIGG_start_line;};
+
 
 private:
     int PIGG_sockfd;    // 文件描述符
-    int PIGG_TRIGMode;  //触发模式
+    int PIGG_TrigMode;  //触发模式
     int PIGG_epollfd;
-    sockaddr_in PIGG_address;
 
+    char* PIGG_url;
+    char* PIGG_version;
+    PIGG_CHECK_STATE PIGG_check_status;
+    int PIGG_content_length;
+    char* PIGG_host;
+    int PIGG_cgi; // 是否启用POST
+    int PIGG_read_idx;
+    int PIGG_checked_idex;
+    char* PIGG_string; // 储存请求头数据
+    sockaddr_in PIGG_address;
+    PIGG_METHOD PIGG_method;
+    int PIGG_start_line;
+    char* doc_root; // 存放html的文件夹
+    MYSQL* mysql;
+    struct stat PIGG_file_stat;
+    char* PIGG_file_address;
+
+    char PIGG_real_file[FILE_NAME_LEN];
+    char PIGG_read_buf[READ_BUFFER_SIZE];
     char PIGG_write_buf[WRITE_BUFFER_SIZE]; // buffer中的内容
     int PIGG_write_idx; // 写的内容的下标，查看是否超过了BUFFER的最大值 
     int PIGG_linger;        // 是否使用keep-alive
 
+    int PIGG_close_log;
+    char* PIGG_doc_root;
     
+
+
+    // sql相关
+    char sql_user[100];
+    char sql_passwd[100];
+    char sql_name[100];
 };
 
 #endif

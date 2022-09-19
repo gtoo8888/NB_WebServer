@@ -27,6 +27,9 @@ fix:使用阻塞队列插入，但是自己还没有实现阻塞队列的内容�
 ## 2022-9-18
 1. 写具体的http的内容，函数体都写好了，完成了http应答的部分
 
+## 2022-9-19
+1. 继续写具体的http的内容，http的读取
+2. 增加了HTML页面
 
 ## 注意事项
 1. 使用vscode远程登录调试的时候，需要用root身份登录，不然无法连接数据库
@@ -55,7 +58,15 @@ PIGG_http.cpp/.h
 sql_connection_pool.cpp/.h -->
 1.数据库可以最后再写上去，因为可以先不存到数据库
 2.写.c文件，具体函数的时候，可以先把函数名字写出来，先搭出框架
+3.定时器还没写
+4.线程池还没写
 
+
+# 不会的
+1.reactor，proactor
+2.信号量
+3.PIGG_http_conn::process()中的modfd
+开个标志位，开始通讯，还是不会搞
 
 # 参考文献
 [日志系统]https://mp.weixin.qq.com/s?__biz=MzI3NzE0NjcwMg==&mid=2650122657&idx=1&sn=c5ce1d8059c40e4cd6deb42a34f8fe49&chksm=f36bb480c41c3d96f69a9fbbc8e7e1515b8bbec87742f76fa3dfda0019a7b58aa282c3ef9bde&scene=21#wechat_redirect

@@ -12,15 +12,15 @@
 #include <cassert>
 #include <arpa/inet.h> //htons(),inet_pton()
 
-
+#include "./PIGG_http/PIGG_http.h"
 
 const int MAX_EVENT_NUMBER = 10000; //最大事件数
 
 
 class PIGG_WebServer{
 public:
-    // PIGG_WebServer();
-    // ~PIGG_WebServer();
+    PIGG_WebServer();
+    ~PIGG_WebServer();
 
     void init(int port, std::string user, std::string passWord, std::string databaseName,
                             bool close_log,bool log_queue);
@@ -41,10 +41,11 @@ public:
 private:
     // 基础设置
     int PIGG_port;
-
-
     int PIGG_close_log;         // 是否关闭日志
     int PIGG_log_queue;         // 是否要开启日志的阻塞队列
+
+    PIGG_http_conn* PIGG_http_users;
+    char* PIGG_root_path;
 
 
     // 数据库相关

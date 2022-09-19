@@ -1,5 +1,6 @@
 #include "PIGG_http.h"
 
+int PIGG_user_count = 0;
 
 /*********************************内部使用***********************************************/
 
@@ -9,7 +10,7 @@ int setnonblocking(int fd){
 }
 
 // 将内核事件表注册读事件，ET模式，选择开启EPOLLONESHOT
-void addfd(int epollfd,int fd, bool one_shot, int TRIGMode){
+void addfd(int epollfd,int fd, bool one_shot, int TrigMode){
 
 }
 
@@ -47,23 +48,33 @@ void PIGG_http_conn::close_conn(bool real_close){
 
 }
 
-void PIGG_http_conn::init(int sockfd,const sockaddr_in &addr, char *root, int TRIGMode,
+void PIGG_http_conn::init(int sockfd,const sockaddr_in &addr, char *root, int TrigMode,
     int close_log, std::string user,std::string passwd,std::string sqlname){
+    PIGG_sockfd = sockfd;
+    PIGG_address = addr;
 
+    addfd(PIGG_epollfd, sockfd, true, PIGG_TrigMode);
+    PIGG_user_count++;  // 用来标记连接池的数量
+
+    PIGG_doc_root = root;
+    PIGG_TrigMode = TrigMode;
+    PIGG_close_log = close_log;
+
+    strcpy(sql_user, user.c_str());
+    strcpy(sql_passwd, passwd.c_str());
+    strcpy(sql_name, sqlname.c_str());
+
+    init();
 }
 
 void PIGG_http_conn::init(){
 
 }
 
-// 对每行进行分析
-PIGG_http_conn::PIGG_LINE_STATUS PIGG_http_conn::parse_line(){
-
-}
-
 
 //循环读取客户数据，直到无数据可读或对方关闭连接
 //非阻塞ET工作模式下，需要一次性将数据读完
+// 在线程池中用到
 bool PIGG_http_conn::read_once(){
 
 }
@@ -82,13 +93,13 @@ bool PIGG_http_conn::write(){
 void PIGG_http_conn::process(){
     PIGG_HTTP_CODE read_ret = process_read();   // 先把请求读取进来
     if(read_ret == NO_REQUEST){
-        modfd(PIGG_epollfd, PIGG_sockfd, EPOLLIN, PIGG_TRIGMode);
+        modfd(PIGG_epollfd, PIGG_sockfd, EPOLLIN, PIGG_TrigMode);
     }
     bool wriet_ret = process_write(read_ret);   // 再将要发送的东西写进去,根据得到的不同请求进行不同的发送
     if(!wriet_ret){
         // close_conn(true);
     }
-    modfd(PIGG_epollfd, PIGG_sockfd, EPOLLOUT, PIGG_TRIGMode);
+    modfd(PIGG_epollfd, PIGG_sockfd, EPOLLOUT, PIGG_TrigMode);
 }
 
 

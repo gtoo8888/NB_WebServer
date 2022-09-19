@@ -14,7 +14,7 @@ public:
 
     int PORT;               //端口号
     int LOGWrite;           //日志写入方式
-    int TRIGMode;           //触发组合模式
+    int TrigMode;           //触发组合模式
     int LISTENTrigmode;     //listenfd触发模式 
     int CONNTrigmode;       //connfd触发模式
     int OPT_LINGER;         //优雅关闭链接
