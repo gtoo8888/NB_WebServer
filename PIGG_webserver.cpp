@@ -1,4 +1,5 @@
 #include "PIGG_webserver.h"
+#include <ctime>
 
 const int MAX_FD = 65536;      //最大文件描述符
 
@@ -33,8 +34,8 @@ void PIGG_WebServer::init(int port, std::string user, std::string passWord, std:
     // 基础配置
     PIGG_port = port;
     PIGG_user = user;
-    PIGG_passWord = passWord;
-    PIGG_databaseName = databaseName;
+    PIGG_password = passWord;
+    PIGG_databasename = databaseName;
 
     // 日志相关
     PIGG_close_log = close_log; // 是否关闭日志
@@ -50,7 +51,11 @@ void PIGG_WebServer::log_write(){
         PIGG_log::get_instance()->init("./ServerLog",PIGG_close_log, 2000, 800000, 0);
     }
 }
-void PIGG_WebServer::init_sql_pool(){
+void PIGG_WebServer::sql_pool(){
+
+}
+
+void PIGG_WebServer::thread_pool(){
 
 }
 
@@ -132,21 +137,22 @@ void PIGG_WebServer::event_loop(){
             int sockfd = events[i].data.fd;
             // 要处理新到的客户端请求
             if (sockfd == PIGG_listenfd){   //如果是老的连接，就跳过了
-                // bool flag = delclinetdata();
-                // if (flag == false)
-                //     continue;
+                bool flag = deal_client_data(); // 处理客户端的数据
+                if (flag == false)
+                    continue;
             }else if (events[i].events & (EPOLLRDHUP | EPOLLHUP | EPOLLERR)){
                 //服务器端关闭连接，移除对应的定时器
-                // deal_timer(timer,sockfd);
+                PIGG_util_timer *timer = PIGG_users_timer[sockfd].PIGG_timer;
+                deal_timer(timer,sockfd);
             }else if ((events[i].events & EPOLLIN) && ( sockfd == PIGG_pipefd[0])) {
-                bool flag = dealwithsignal(timeout, stop_server);   // 处理信号
+                bool flag = deal_with_signal(timeout, stop_server);   // 处理信号
                 if(flag == false){
                     LOG_ERROR("%s", "dealclientdata failure");
                 }
             }else if (events[i].events & EPOLLIN) {     // 处理写数据
-                dealwithread(sockfd);
+                deal_with_read(sockfd);
             }else if (events[i].events & EPOLLOUT) {    // 处理读数据
-                dealwithwrite(sockfd);
+                deal_with_write(sockfd);
             }
         }
         if(timeout) {
@@ -162,31 +168,104 @@ void PIGG_WebServer::adjust_timer(int * timer) {
 }
 
 // 处理时间
-void PIGG_WebServer::deal_timer(int * timer,int sockfd) {
-
+void PIGG_WebServer::deal_timer(PIGG_util_timer* timer,int sockfd) {
+    timer->PIGG_cb_func(&PIGG_users_timer[sockfd]);
+    if(timer){
+        PIGG_webserver_utils.PIGG_timer_lst.del_timer(timer);
+    }
+    LOG_INFO("close fd %d",PIGG_users_timer[sockfd].sockfd);
 }
 
 // 处理客户端的数据    
-bool PIGG_WebServer::dealclientdata(){
-
+bool PIGG_WebServer::deal_client_data(){
+    struct sockaddr_in PIGG_client_addr;
+    socklen_t PIGG_client_addr_len = sizeof(PIGG_client_addr);
+    if(PIGG_listen_trig_mode == 0){
+        int connfd = accept(PIGG_listenfd, (struct sockaddr *)&PIGG_client_addr,&PIGG_client_addr_len);
+        if(connfd < 0){
+            LOG_ERROR("%s:error is:%d","accept error",errno);
+            return false;
+        }
+        if(PIGG_http_conn::PIGG_user_count >= MAX_FD){
+            PIGG_webserver_utils.show_error(connfd, "Internal server busy");
+            LOG_ERROR("%s","Internal server busy");
+            return false;
+        }
+        PIGG_timer(connfd, PIGG_client_addr);
+    }else{
+        while(1){
+            int connfd = accept(PIGG_listenfd, (struct sockaddr *)&PIGG_client_addr,&PIGG_client_addr_len);
+            if(connfd < 0){
+                LOG_ERROR("%s:error is:%d","accept error",errno);
+                break;
+            }
+            if(PIGG_http_conn::PIGG_user_count >= MAX_FD){
+                PIGG_webserver_utils.show_error(connfd, "Internal server busy");
+                LOG_ERROR("%s","Internal server busy");
+                return false;
+            }
+            PIGG_timer(connfd, PIGG_client_addr);
+        }
+        return false;
+    }
+    return true;
 }
 
 // 处理信号
-bool PIGG_WebServer::dealwithsignal(bool &timeout,bool &stop_server) {
-
+bool PIGG_WebServer::deal_with_signal(bool &timeout,bool &stop_server) {
+    int ret = 0;
+    int sig;
+    char signals[1024];
+    ret = recv(PIGG_pipefd[0],signals,sizeof(signals),0);
+    if(ret == -1){
+        return false;
+    }else if(ret == 0){
+        return false;
+    }else{
+        for(int i = 0;i < ret;i++){
+            switch (signals[i]){
+                case SIGALRM:{  // SIGALRM是在定时器终止时发送给进程的信号。
+                    timeout = true;
+                    break;
+                }
+                case SIGTERM:{  // SIGTERM信号是用于终止程序的通用信号
+                    stop_server = true;
+                    break;
+                }
+            }
+        }
+    }
+    return true;
 }
 
 // 处理读取
-void PIGG_WebServer::dealwithread(int sockfd) {
+void PIGG_WebServer::deal_with_read(int sockfd) {
     
 }
 
 // 处理写
-void PIGG_WebServer::dealwithwrite(int sockfd) {
+void PIGG_WebServer::deal_with_write(int sockfd) {
     // reactor
     // if (m_actor_model){
     //     if (timer){
     //         adjust_timer(timer);
     //     }
     // }
+}
+
+void PIGG_WebServer::PIGG_timer(int connfd,struct sockaddr_in clinet_address){
+    PIGG_http_users[connfd].init(connfd,clinet_address,PIGG_root_path,PIGG_conn_trig_mode,PIGG_close_log,PIGG_user,PIGG_password,PIGG_databasename);
+    
+    //初始化client_data数据
+    //创建定时器，设置回调函数和超时时间，绑定用户数据，将定时器添加到链表中
+    PIGG_users_timer[connfd].address = clinet_address;
+    PIGG_users_timer[connfd].sockfd = connfd;
+
+    PIGG_util_timer *timer = new PIGG_util_timer;
+    timer->user_data = &PIGG_users_timer[connfd];
+    timer->PIGG_cb_func = PIGG_cb_func;
+    time_t cur = time(NULL);
+    timer->expire = cur + 3 * TIMESLOT;
+    PIGG_users_timer[connfd].PIGG_timer = timer;
+    PIGG_webserver_utils.PIGG_timer_lst.add_timer(timer);
 }

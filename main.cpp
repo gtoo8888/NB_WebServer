@@ -123,66 +123,27 @@ int main(int argc,char *argv[]){
     // 参数初始化
     PIGG_WebServer server;
     server.init(port, user, passwd, databasename, true, true);
-    std::cout << "-----PPIGG_WebServer::init()------" << std::endl;
+    std::cout << "-----PIGG_WebServer::init()------" << std::endl;
     server.log_write();
-    std::cout << "-----PPIGG_WebServer::log_write()------" << std::endl;
+    std::cout << "-----PIGG_WebServer::log_write()------" << std::endl;
+    // server.sql_pool();  //数据库连接池
+    // std::cout << "-----PIGG_WebServer::sql_pool()------" << std::endl;
+    // server.thread_pool();   //开启线程池
+    // std::cout << "-----PIGG_WebServer::thread_pool()------" << std::endl;
     server.init_trig_mod(0,0);    // 默认LT+LT,不选择优雅关闭
-    std::cout << "-----PPIGG_WebServer::init_trig_mod()------" << std::endl;
+    std::cout << "-----PIGG_WebServer::init_trig_mod()------" << std::endl;
     server.event_listen();      // socket通讯的基本流程，开始建立通讯
-    std::cout << "-----PPIGG_WebServer::event_listen()------" << std::endl;
+    std::cout << "-----PIGG_WebServer::event_listen()------" << std::endl;
     std::cout << "-----enent_loop()start------" << std::endl;
     server.event_loop();           // 整个主程序在这里循环
     
 
 
-    test_namespace(); // 对命名空间使用的测试,正常应该注释掉
-    PIGG_init_test::PIGG_test main_PIGG_test;        // 普通的生成一个类的实例的调用方法     
+    // test_namespace(); // 对命名空间使用的测试,正常应该注释掉
+    // PIGG_init_test::PIGG_test main_PIGG_test;        // 普通的生成一个类的实例的调用方法     
     // main_PIGG_test.test_fflush();
     // qDebug() << QString("imagesNum:%1, ").arg(123)
-
     // test_mysql();
-
     return 0;
 }
 
-
-
-// void dataBase::user_insert(UserBody &body) {
-//     char select_user[255];
-//     char query[255];
-//     MYSQL_RES *result;
-//     sprintf(select_user, "select * from user where UserName='%s'", body.userName);
-//     if (mysql_query(&m_sqlCon, select_user)||!(result = mysql_store_result(&m_sqlCon))) {
-//         std::cout << "插入查询失败" << std::endl;
-//         return;
-//     }
-//     if (mysql_num_rows(result)) {
-//         std::cout << "用户已存在" << std::endl;
-//         mysql_free_result(result);
-//         return;
-//     }
-//     mysql_free_result(result);
-//     sprintf(query, "insert into user(UserName,UserPass,ConnectionNum,UseFor) values('%s','%s',%d,%d)", body.userName, body.userPass, body.connection, body.type);
-//     if (mysql_query(&m_sqlCon, query)) {
-//         std::cout << "插入数据失败" << std::endl;
-//         return;
-//     }
-//     std::cout << "插入数据成功,共插入：" <<mysql_affected_rows(&m_sqlCon)<<"行" << std::endl;
-// }
-
-// void insert(MYSQL* conn, int ID, char name[20], int age, float score)
-// //插入数据
-// {
-// 	char str[64] = "INSERT INTO student VALUES( ";
-// 	char buffer[128] = { 0 };
-// 	char str2[4] = ",'";
-// 	char str3[4] = "',";
-// 	char str4[2] = ",";
-// 	char str5[2] = ")";
-// 	int len = sprintf_s(buffer, "%s%d%s%s%s%d%s%f%s", str, ID, str2, name, str3, age, str4, score, str5);
-// 	mysql_query(&mysql, buffer);
-// 	if (len < 0)
-// 		cout << "存档失败！" << endl;
-// 	if (len > 0)
-// 		cout << "存档成功！" << endl;
-// }

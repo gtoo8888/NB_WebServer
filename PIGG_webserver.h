@@ -11,10 +11,13 @@
 #include <cstring>     //bzero()
 #include <cassert>
 #include <arpa/inet.h> //htons(),inet_pton()
+#include <signal.h> // SIGALRM,SIGTERM
 
 #include "./PIGG_http/PIGG_http.h"
+#include "./PIGG_timer/PIGG_lst_timer.h"
 
 const int MAX_EVENT_NUMBER = 10000; //最大事件数
+const int TIMESLOT = 5;//最小超时单位
 
 
 class PIGG_WebServer{
@@ -26,32 +29,35 @@ public:
                             bool close_log,bool log_queue);
 
     void log_write();
-    void init_sql_pool();   // 初始化mysql的线程池
+    void sql_pool();   // 初始化mysql的连接池子
+    void thread_pool();   // 初始化线程池
     void init_trig_mod(int trig_mode,int opt_LINGER);   // 初始化触发模式
     void event_listen();        // 开始监听
     void event_loop();          // 主函数开始循环
 
     void adjust_timer(int * timer); // 判断时间
-    void deal_timer(int * timer,int sockfd);    // 处理时间
-    bool dealclientdata();  // 处理客户端的数据
-    bool dealwithsignal(bool &timeout,bool &stop_server);   // 处理信号
-    void dealwithread(int sockfd);      // 处理读取
-    void dealwithwrite(int sockfd);     // 处理写
+    void deal_timer(PIGG_util_timer* timer,int sockfd);    // 处理时间
+    bool deal_client_data();  // 处理客户端的数据
+    bool deal_with_signal(bool &timeout,bool &stop_server);   // 处理信号
+    void deal_with_read(int sockfd);      // 处理读取
+    void deal_with_write(int sockfd);     // 处理写
 
+    //创建定时器，设置回调函数和超时时间，绑定用户数据，将定时器添加到链表中
+    void PIGG_timer(int connfd,struct sockaddr_in clinet_address);
 private:
     // 基础设置
     int PIGG_port;
     int PIGG_close_log;         // 是否关闭日志
     int PIGG_log_queue;         // 是否要开启日志的阻塞队列
 
-    PIGG_http_conn* PIGG_http_users;
+    PIGG_http_conn* PIGG_http_users;    // 表示整个http连接的类
     char* PIGG_root_path;
 
 
     // 数据库相关
     std::string PIGG_user;
-    std::string PIGG_passWord;
-    std::string PIGG_databaseName;
+    std::string PIGG_password;
+    std::string PIGG_databasename;
     int PIGG_sql_num;   // 数据库的链接数
     // connection_pool *PIGG_connPool;     // 数据库连接池
 
@@ -66,6 +72,10 @@ private:
 
     int PIGG_epollfd;
     int PIGG_pipefd[2];
+
+    // 定时器相关
+    PIGG_client_data *PIGG_users_timer; // 定时器传递的数据类型
+    PIGG_Utils PIGG_webserver_utils;
 
 };
 

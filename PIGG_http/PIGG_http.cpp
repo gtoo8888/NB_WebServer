@@ -1,6 +1,6 @@
 #include "PIGG_http.h"
 
-int PIGG_user_count = 0;
+int PIGG_http_conn::PIGG_user_count = 0;
 
 /*********************************内部使用***********************************************/
 

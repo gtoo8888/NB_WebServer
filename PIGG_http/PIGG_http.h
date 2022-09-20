@@ -99,6 +99,8 @@ private:
 
     char *get_line() {return PIGG_read_buf + PIGG_start_line;};
 
+public:
+    static int PIGG_user_count;  // 在定时器中要用
 
 private:
     int PIGG_sockfd;    // 文件描述符
