@@ -38,7 +38,7 @@ void PIGG_WebServer::init(int port, std::string user, std::string passWord, std:
     PIGG_databasename = databaseName;
 
     // 日志相关
-    PIGG_close_log = close_log; // 是否关闭日志
+    PIGG_close_log = close_log; // 是否关闭日志,false才是开启日志
     PIGG_log_queue = log_queue; // 开启日志队列
 }
 
@@ -81,16 +81,20 @@ void PIGG_WebServer::init_trig_mod(int trig_mode,int opt_LINGER){
 // 很多时钟的内容没有添加
 void PIGG_WebServer::event_listen(){
     //网络编程基础步骤
+    // PF_INET IPV4协议
+    // SOCK_STREAM TCP通讯
     PIGG_listenfd = socket(PF_INET,SOCK_STREAM,0);
     assert(PIGG_listenfd >= 0); // 如果小于0就报错
 
     // 是否开启优雅关闭连接，默认不开启
     if(PIGG_opt_LINGER == 0){
-        struct linger tmp = {0, 1};
+        struct linger tmp = {0, 1}; // l_onoff为0,l_linger被忽略，默认关闭，这个配置不起作用
         // 获取或者设置与某个套接字关联的选项
         setsockopt(PIGG_listenfd, SOL_SOCKET, SO_LINGER, &tmp, sizeof(tmp));
+        // SOL_SOCKET 通用套接字选项
+        // SO_LINGER 延迟关闭连接
     }else if(PIGG_opt_LINGER == 1){
-        struct linger tmp = {1, 1};
+        struct linger tmp = {1, 1}; // l_onoff为1,l_linger为超时时间，为1S，超时之前会发送所有数据
         setsockopt(PIGG_listenfd, SOL_SOCKET, SO_LINGER, &tmp, sizeof(tmp));
     }
 
@@ -102,6 +106,7 @@ void PIGG_WebServer::event_listen(){
     address.sin_addr.s_addr = htonl(INADDR_ANY);   // 将主机的无符号长整形数转换成网络字节顺序
 
     int flag = 1;
+    // SO_REUSEADDR 重复使用本地端口和地址
     setsockopt(PIGG_listenfd, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag));
     ret = bind(PIGG_listenfd, (struct sockaddr *)&address, sizeof(address));
     assert(ret >= 0);
@@ -113,12 +118,24 @@ void PIGG_WebServer::event_listen(){
     PIGG_epollfd = epoll_create(5);
     assert(PIGG_epollfd != -1);
 
-    // http_conn::PIGG_epollfd = PIGG_epollfd;
-    ret = socketpair(PF_UNIX, SOCK_STREAM, 0, PIGG_pipefd);
-    assert(ret != -1);
+    PIGG_webserver_utils.addfd(PIGG_epollfd, PIGG_listenfd, false,PIGG_listen_trig_mode);
+    PIGG_http_conn::PIGG_epollfd = PIGG_epollfd;
 
+    // PF_UNIX 本地通讯
+    ret = socketpair(PF_UNIX, SOCK_STREAM, 0, PIGG_pipefd); // 建立一对匿名的已经连接的套接字
+    assert(ret != -1);
     // 工具类,信号和描述符基础操作
-    // 没有实现
+    PIGG_webserver_utils.set_non_blocking(PIGG_pipefd[1]);
+    PIGG_webserver_utils.addfd(PIGG_epollfd,PIGG_pipefd[0],false,0);
+
+    PIGG_webserver_utils.addsig(SIGPIPE, SIG_IGN);
+    PIGG_webserver_utils.addsig(SIGALRM, PIGG_webserver_utils.sig_handle,false);
+    PIGG_webserver_utils.addsig(SIGALRM, PIGG_webserver_utils.sig_handle,false);
+
+    alarm(TIMESLOT);
+
+    PIGG_Utils::PIGG_pipfd = PIGG_pipefd;
+    PIGG_Utils::PIGG_epollfd = PIGG_epollfd;
 }
 
 // 主程序循环，不断接收请求
@@ -127,7 +144,9 @@ void PIGG_WebServer::event_loop(){
     bool stop_server = false;
 
     while(!stop_server){
-        int number = epoll_wait(PIGG_epollfd, events, MAX_EVENT_NUMBER, -1);
+        LOG_INFO("%s", "epoll_wait");
+        int number = epoll_wait(PIGG_epollfd, events, MAX_EVENT_NUMBER, -1);    // 如果没有信号进来，就在这里等着
+        LOG_INFO("number:%d", number);
         if(number < 0 && errno != EINTR){
             LOG_ERROR("%s", "epoll failure");
             break;
@@ -156,6 +175,7 @@ void PIGG_WebServer::event_loop(){
             }
         }
         if(timeout) {
+            PIGG_webserver_utils.timer_handler();
             LOG_INFO("%s", "time tick");
             timeout = false;
         }
@@ -163,7 +183,7 @@ void PIGG_WebServer::event_loop(){
 }
 
 // 判断时间
-void PIGG_WebServer::adjust_timer(int * timer) {
+void PIGG_WebServer::adjust_timer(PIGG_util_timer* timer) {
 
 }
 
@@ -240,7 +260,35 @@ bool PIGG_WebServer::deal_with_signal(bool &timeout,bool &stop_server) {
 
 // 处理读取
 void PIGG_WebServer::deal_with_read(int sockfd) {
-    
+    PIGG_util_timer *timer = PIGG_users_timer[sockfd].PIGG_timer;
+
+    // reactor
+    if(PIGG_actor_model == 1){  // 运行模式
+        if(timer){
+            adjust_timer(timer);
+        }
+        // PIGG_pool->
+        while(true){
+            if(PIGG_http_users[sockfd].improv){
+                if(PIGG_http_users[sockfd].timer_flag){
+                    deal_timer(timer,sockfd);
+                    PIGG_http_users[sockfd].timer_flag = 0;
+                }
+                PIGG_http_users[sockfd].improv = 0;
+                break;
+            }
+        }
+    }else{// proactor
+        if(PIGG_http_users[sockfd].read_once()){
+            LOG_INFO("deal with the client(%s)",inet_ntoa(PIGG_http_users[sockfd].get_address()->sin_addr))
+            // PIGG_pool->
+            if(timer){
+                adjust_timer(timer);
+            }
+        }else{
+            deal_timer(timer,sockfd);
+        }
+    }
 }
 
 // 处理写

@@ -36,6 +36,13 @@ fix:使用阻塞队列插入，但是自己还没有实现阻塞队列的内容�
 2. 主函数运行中的webserver中增加了定时器处理的功能
 3. 梳理主函数运行流程，接下来准备要跑起来了
 
+## 2022-9-20
+1. 程序跑起来，进入主循环event_loop()没有问题，但是使用postman发送数据，就导致程序Segmentation fault (core dumped)错误
+2. 卡在epoll_wait里面，正确的程序可以一直循环，怀疑是没有开线程池的原因，所以一直在等待
+3. PIGG_http_conn::read_once()函数没有编写没法使用LT和ET读取数据
+4. 复习了epoll的使用流程，复习epoll相关函数
+
+
 ## 注意事项
 1. 使用vscode远程登录调试的时候，需要用root身份登录，不然无法连接数据库
 2. 查找相关的帮助 ```man pthread_cond_broadcast```

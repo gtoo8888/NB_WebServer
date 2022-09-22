@@ -56,7 +56,7 @@ public:
     void init(int timeslot);
 
     //对文件描述符设置非阻塞
-    int setnonblocking(int fd);
+    int set_non_blocking(int fd);
 
     //将内核事件表注册读事件，ET模式，选择开启EPOLLONESHOT
     void addfd(int epollfd, int fd, bool one_shot, int TrigMode);

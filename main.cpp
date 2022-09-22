@@ -122,10 +122,15 @@ int main(int argc,char *argv[]){
 
     // 参数初始化
     PIGG_WebServer server;
-    server.init(port, user, passwd, databasename, true, true);
+    server.init(port, user, passwd, databasename, false, true);
     std::cout << "-----PIGG_WebServer::init()------" << std::endl;
     server.log_write();
     std::cout << "-----PIGG_WebServer::log_write()------" << std::endl;
+
+    PIGG_init_test::PIGG_test test;
+    test.test_log();
+
+
     // server.sql_pool();  //数据库连接池
     // std::cout << "-----PIGG_WebServer::sql_pool()------" << std::endl;
     // server.thread_pool();   //开启线程池

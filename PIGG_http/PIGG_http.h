@@ -101,11 +101,13 @@ private:
 
 public:
     static int PIGG_user_count;  // 在定时器中要用
+    static int PIGG_epollfd;    // 在主webserver中使用
+
+    int PIGG_state;     //读为0, 写为1
 
 private:
     int PIGG_sockfd;    // 文件描述符
     int PIGG_TrigMode;  //触发模式
-    int PIGG_epollfd;
 
     char* PIGG_url;
     char* PIGG_version;
@@ -132,8 +134,11 @@ private:
 
     int PIGG_close_log;
     char* PIGG_doc_root;
-    
 
+
+    int bytes_to_send;
+    int bytes_have_send;
+    
 
     // sql相关
     char sql_user[100];

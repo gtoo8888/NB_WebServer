@@ -35,7 +35,7 @@ public:
     void event_listen();        // 开始监听
     void event_loop();          // 主函数开始循环
 
-    void adjust_timer(int * timer); // 判断时间
+    void adjust_timer(PIGG_util_timer* timer); // 判断时间
     void deal_timer(PIGG_util_timer* timer,int sockfd);    // 处理时间
     bool deal_client_data();  // 处理客户端的数据
     bool deal_with_signal(bool &timeout,bool &stop_server);   // 处理信号
@@ -49,6 +49,7 @@ private:
     int PIGG_port;
     int PIGG_close_log;         // 是否关闭日志
     int PIGG_log_queue;         // 是否要开启日志的阻塞队列
+    int PIGG_actor_model;
 
     PIGG_http_conn* PIGG_http_users;    // 表示整个http连接的类
     char* PIGG_root_path;

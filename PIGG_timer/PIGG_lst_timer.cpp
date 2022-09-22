@@ -133,19 +133,41 @@ void PIGG_Utils::init(int timeslot){
 
 }
 
-int PIGG_Utils::setnonblocking(int fd){
-    
+//对文件描述符设置非阻塞
+int PIGG_Utils::set_non_blocking(int fd){
+    int old_option = fcntl(fd,F_GETFL); // F_GETFL得到套接字属性
+    int new_option = old_option | O_NONBLOCK ;  // O_NONBLOCK 设置套接字为非阻塞IO
+    fcntl(fd, F_SETFL, new_option); // F_SETFL 用来设置属性
+    return old_option;
 }
 
+//将内核事件表注册读事件，ET模式，选择开启EPOLLONESHOT
 void PIGG_Utils::addfd(int epollfd, int fd, bool one_shot, int TrigMode){
+    epoll_event event;
+    event.data.fd = fd;
+
+    if(TrigMode == 1)
+        event.events = EPOLLIN | EPOLLET | EPOLLRDHUP;
+    else
+        event.events = EPOLLIN | EPOLLRDHUP;
     
+    if(one_shot)
+        event.events |= EPOLLONESHOT;
+
+    epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &event);
+    set_non_blocking(fd);   //对文件描述符设置非阻塞
 }
 
-
+//信号处理函数
 void PIGG_Utils::sig_handle(int sig){
-    
+    //为保证函数的可重入性，保留原来的errno
+    int save_errno = errno;
+    int msg = sig;
+    send(PIGG_pipfd[1],(char*)&msg,1,0);
+    errno = save_errno;
 }
 
+// 设置信号函数
 void PIGG_Utils::addsig(int sig, void(handler)(int), bool restart){
     struct sigaction sa;
     memset(&sa, '\0', sizeof(sa));
@@ -156,16 +178,17 @@ void PIGG_Utils::addsig(int sig, void(handler)(int), bool restart){
     assert(sigaction(sig, &sa, NULL) != -1);
 }
 
-
+//定时处理任务，重新定时以不断触发SIGALRM信号
 void PIGG_Utils::timer_handler(){
-    
+    PIGG_timer_lst.tick();
+    alarm(PIGG_TimeSlot);
 }
 
 void PIGG_Utils::show_error(int connfd, const char* info){
     
 }
 
-
+int *PIGG_Utils::PIGG_pipfd = 0;
 int PIGG_Utils::PIGG_epollfd = 0;
 
 class PIGG_Utils;
