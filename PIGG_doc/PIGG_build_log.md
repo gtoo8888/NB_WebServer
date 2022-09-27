@@ -36,11 +36,17 @@ fix:使用阻塞队列插入，但是自己还没有实现阻塞队列的内容�
 2. 主函数运行中的webserver中增加了定时器处理的功能
 3. 梳理主函数运行流程，接下来准备要跑起来了
 
-## 2022-9-20
+## 2022-9-22
 1. 程序跑起来，进入主循环event_loop()没有问题，但是使用postman发送数据，就导致程序Segmentation fault (core dumped)错误
 2. 卡在epoll_wait里面，正确的程序可以一直循环，怀疑是没有开线程池的原因，所以一直在等待
 3. PIGG_http_conn::read_once()函数没有编写没法使用LT和ET读取数据
 4. 复习了epoll的使用流程，复习epoll相关函数
+
+
+## 2022-9-23
+1. 增加了很多八股文
+2. 学习定时器的相关操作，了解时间轮的原理
+
 
 
 ## 注意事项
@@ -80,6 +86,16 @@ sql_connection_pool.cpp/.h -->
 3.PIGG_http_conn::process()中的modfd
 开个标志位，开始通讯，还是不会搞
 
+
+# 扩展
+
+1. 动态资源
+2. 如何扩展成HTTPS
+3. 使用json文件进行配置
+4. 小顶堆实现定时器系统
+5. 文件上传和下载的功能吗 类似于FTP那种的
+
+
 # 参考文献
 [日志系统]https://mp.weixin.qq.com/s?__biz=MzI3NzE0NjcwMg==&mid=2650122657&idx=1&sn=c5ce1d8059c40e4cd6deb42a34f8fe49&chksm=f36bb480c41c3d96f69a9fbbc8e7e1515b8bbec87742f76fa3dfda0019a7b58aa282c3ef9bde&scene=21#wechat_redirect
 [Reactor模型和Proactor模型]https://cloud.tencent.com/developer/article/1488120
@@ -88,3 +104,6 @@ sql_connection_pool.cpp/.h -->
 [TinyWebServer]https://github.com/qinguoyi/TinyWebServer
 [HAHA-WebServer里面添加了json配置]https://github.com/tomatowithpotato/HAHA-WebServer
 [markparticle/WebServer]https://github.com/markparticle/WebServer
+[本项目是一个基于Linux 的轻量级Web服务器，能够对浏览器的连接请求进行解析处理，处 理完之后给浏览器客户端返回一个响应，如文字、图片、视频等;
+小顶堆实现定时器系统]https://github.com/huboy-zhao/MyWebserver
+[使用C++11实现数据库连接池连接数据库]https://github.com/xbQAQ/httpServer

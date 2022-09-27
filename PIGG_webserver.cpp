@@ -4,7 +4,7 @@
 const int MAX_FD = 65536;      //最大文件描述符
 
 PIGG_WebServer::PIGG_WebServer(){
-    //http_conn类对象
+    // 预先为每个可能的客户连接分配一个http_conn对象
     PIGG_http_users = new PIGG_http_conn[MAX_FD];
 
     //root文件夹路径
@@ -132,7 +132,7 @@ void PIGG_WebServer::event_listen(){
     PIGG_webserver_utils.addsig(SIGALRM, PIGG_webserver_utils.sig_handle,false);
     PIGG_webserver_utils.addsig(SIGALRM, PIGG_webserver_utils.sig_handle,false);
 
-    alarm(TIMESLOT);
+    alarm(TIMESLOT);    //alarm定时触发SIGALRM信号
 
     PIGG_Utils::PIGG_pipfd = PIGG_pipefd;
     PIGG_Utils::PIGG_epollfd = PIGG_epollfd;
@@ -159,11 +159,12 @@ void PIGG_WebServer::event_loop(){
                 bool flag = deal_client_data(); // 处理客户端的数据
                 if (flag == false)
                     continue;
-            }else if (events[i].events & (EPOLLRDHUP | EPOLLHUP | EPOLLERR)){
+            }else if (events[i].events & (EPOLLRDHUP | EPOLLHUP | EPOLLERR)){//处理异常事件
                 //服务器端关闭连接，移除对应的定时器
                 PIGG_util_timer *timer = PIGG_users_timer[sockfd].PIGG_timer;
                 deal_timer(timer,sockfd);
-            }else if ((events[i].events & EPOLLIN) && ( sockfd == PIGG_pipefd[0])) {
+            }else if ((events[i].events & EPOLLIN) && ( sockfd == PIGG_pipefd[0])) {//处理定时器信号
+                //接收到SIGALRM信号，timeout设置为True
                 bool flag = deal_with_signal(timeout, stop_server);   // 处理信号
                 if(flag == false){
                     LOG_ERROR("%s", "dealclientdata failure");
@@ -174,6 +175,8 @@ void PIGG_WebServer::event_loop(){
                 deal_with_write(sockfd);
             }
         }
+        //处理定时器为非必须事件，收到信号并不是立马处理
+        //完成读写事件后，再进行处理
         if(timeout) {
             PIGG_webserver_utils.timer_handler();
             LOG_INFO("%s", "time tick");
@@ -260,13 +263,16 @@ bool PIGG_WebServer::deal_with_signal(bool &timeout,bool &stop_server) {
 
 // 处理读取
 void PIGG_WebServer::deal_with_read(int sockfd) {
+    //创建定时器临时变量，将该连接对应的定时器取出来
     PIGG_util_timer *timer = PIGG_users_timer[sockfd].PIGG_timer;
 
     // reactor
     if(PIGG_actor_model == 1){  // 运行模式
+        
         if(timer){
             adjust_timer(timer);
         }
+         
         // PIGG_pool->
         while(true){
             if(PIGG_http_users[sockfd].improv){
@@ -281,11 +287,15 @@ void PIGG_WebServer::deal_with_read(int sockfd) {
     }else{// proactor
         if(PIGG_http_users[sockfd].read_once()){
             LOG_INFO("deal with the client(%s)",inet_ntoa(PIGG_http_users[sockfd].get_address()->sin_addr))
+            //若监测到读事件，将该事件放入请求队列
             // PIGG_pool->
+            //若有数据传输，则将定时器往后延迟3个单位
+            //对其在链表上的位置进行调整
             if(timer){
                 adjust_timer(timer);
             }
         }else{
+            //服务器端关闭连接，移除对应的定时器
             deal_timer(timer,sockfd);
         }
     }
@@ -306,14 +316,16 @@ void PIGG_WebServer::PIGG_timer(int connfd,struct sockaddr_in clinet_address){
     
     //初始化client_data数据
     //创建定时器，设置回调函数和超时时间，绑定用户数据，将定时器添加到链表中
+    //初始化该连接对应的连接资源
     PIGG_users_timer[connfd].address = clinet_address;
     PIGG_users_timer[connfd].sockfd = connfd;
 
-    PIGG_util_timer *timer = new PIGG_util_timer;
-    timer->user_data = &PIGG_users_timer[connfd];
-    timer->PIGG_cb_func = PIGG_cb_func;
+    PIGG_util_timer *timer = new PIGG_util_timer;    //创建定时器临时变量
+    timer->user_data = &PIGG_users_timer[connfd];    //设置定时器对应的连接资源
+    timer->PIGG_cb_func = PIGG_cb_func;    //设置回调函数
+
     time_t cur = time(NULL);
-    timer->expire = cur + 3 * TIMESLOT;
-    PIGG_users_timer[connfd].PIGG_timer = timer;
-    PIGG_webserver_utils.PIGG_timer_lst.add_timer(timer);
+    timer->expire = cur + 3 * TIMESLOT;//设置绝对超时时间
+    PIGG_users_timer[connfd].PIGG_timer = timer;//创建该连接对应的定时器，初始化为前述临时变量
+    PIGG_webserver_utils.PIGG_timer_lst.add_timer(timer);//将该定时器添加到链表中
 }

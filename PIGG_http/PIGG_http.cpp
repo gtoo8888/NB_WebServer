@@ -119,7 +119,32 @@ void PIGG_http_conn::init(){
 // 在线程池中用到
 // 在正常的程序中也需要用到
 bool PIGG_http_conn::read_once(){
+    if(PIGG_read_idx >= READ_BUFFER_SIZE){
+        return false;
+    }
+    int bytes_read = 0;
 
+    if(PIGG_TrigMode == 0){  //LT读取数据
+        bytes_read = recv(PIGG_sockfd,PIGG_read_buf + PIGG_read_idx, READ_BUFFER_SIZE - PIGG_read_idx,0);
+        PIGG_read_idx += bytes_read;
+        if(bytes_read <= 0){
+            return false;
+        }
+        return true;
+    }else{ //ET读数据
+        while(true){
+            bytes_read = recv(PIGG_sockfd,PIGG_read_buf + PIGG_read_idx, READ_BUFFER_SIZE - PIGG_read_idx,0);
+            if(bytes_read == -1){
+                if(errno == EAGAIN || errno == EWOULDBLOCK)
+                    break;
+                return false;         
+            }else if(bytes_read == 0){
+                return false;
+            }
+            PIGG_read_idx += bytes_read;
+        }
+        return true;
+    }
 }
 
 
