@@ -64,7 +64,7 @@ public:
     ~PIGG_http_conn() {}
 
 public:
-    void init(int sockfd,const sockaddr_in &addr, char *root, int TrigMode,int close_log, std::string user,std::string passwd,std::string sqlname);
+    void init(int sockfd,const sockaddr_in &addr, char *root, int trig_mode,int close_log, std::string user,std::string passwd,std::string sqlname);
     void close_conn(bool real_close);
     void process();
     bool read_once();
@@ -102,12 +102,12 @@ private:
 public:
     static int PIGG_user_count;  // 在定时器中要用
     static int PIGG_epollfd;    // 在主webserver中使用
-
+    MYSQL* mysql;
     int PIGG_state;     //读为0, 写为1
 
 private:
     int PIGG_sockfd;    // 文件描述符
-    int PIGG_TrigMode;  //触发模式
+    int PIGG_trig_mode;  //触发模式
 
     char* PIGG_url;
     char* PIGG_version;
@@ -122,7 +122,6 @@ private:
     PIGG_METHOD PIGG_method;
     int PIGG_start_line;
     char* doc_root; // 存放html的文件夹
-    MYSQL* mysql;
     struct stat PIGG_file_stat;
     char* PIGG_file_address;
 

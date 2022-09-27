@@ -6,6 +6,7 @@
 #include <iostream> // 有这个才能使用std::string
 #include <mysql/mysql.h>
 #include "../PIGG_lock/PIGG_lock.h"
+#include "../PIGG_log/PIGG_log.h"
 
 class PIGG_connection_pool{
 public:
@@ -45,12 +46,12 @@ public:
 
 class PIGG_connection_RALL{
 public:
-    PIGG_connection_RALL();
+    PIGG_connection_RALL(MYSQL **con,PIGG_connection_pool *connPool);
     ~PIGG_connection_RALL();
 
 private:
     MYSQL *PIGG_conRAII;
-    PIGG_connection_pool *poolRAII;
+    PIGG_connection_pool *PIGG_poolRAII;
 };
 
 #endif

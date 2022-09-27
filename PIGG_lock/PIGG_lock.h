@@ -12,6 +12,7 @@
 #include <exception>
 
 // 信号量
+// 在线程池中使用
 class PIGG_sem {
 public:
     PIGG_sem(){

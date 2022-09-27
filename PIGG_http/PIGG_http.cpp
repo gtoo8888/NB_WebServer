@@ -1,7 +1,10 @@
 #include "PIGG_http.h"
+#include <map>
 
 int PIGG_http_conn::PIGG_user_count = 0;
 int PIGG_http_conn::PIGG_epollfd = -1;
+
+std::map<std::string,std::string> user_map;
 
 /*********************************内部使用***********************************************/
 
@@ -14,11 +17,11 @@ int set_non_blocking(int fd){
 }
 
 // 将内核事件表注册读事件，ET模式，选择开启EPOLLONESHOT
-void addfd(int epollfd,int fd, bool one_shot, int TrigMode){
+void addfd(int epollfd,int fd, bool one_shot, int trig_mode){
     epoll_event event;
     event.data.fd = fd;
 
-    if(TrigMode == 1)
+    if(trig_mode == 1)
         event.events = EPOLLIN | EPOLLET | EPOLLRDHUP;
     else
         event.events = EPOLLIN | EPOLLRDHUP;
@@ -38,11 +41,11 @@ void remoefd(int epollfd, int fd){
 // 将事件重置为EPOLLONESHOT
 // 同一SOCKET只能被一个线程处理，不会跨越多个线程
 // ************重要函数，需要理解***************/
-void modfd(int epollfd, int fd, int ev ,int TrigMode){
+void modfd(int epollfd, int fd, int ev ,int trig_mode){
     epoll_event event;
     event.data.fd = fd;
 
-    if(TrigMode == 1)
+    if(trig_mode == 1)
         event.events = ev | EPOLLET | EPOLLONESHOT | EPOLLRDHUP;
     else   
         event.events = ev | EPOLLONESHOT | EPOLLRDHUP;
@@ -55,27 +58,45 @@ void modfd(int epollfd, int fd, int ev ,int TrigMode){
 
 
 void PIGG_http_conn::init_mysql_result(PIGG_connection_pool *connPool){
+    MYSQL* mysql = NULL;
+    PIGG_connection_RALL PIGG_mysqlcon(&mysql, connPool);
 
+    if(mysql_query(mysql,"SELECT username,passwd FROM user")){
+        LOG_ERROR("SELECT error:%s\n",mysql_error(mysql));
+    }
+
+    MYSQL_RES *result = mysql_store_result(mysql);
+
+    int num_fields = mysql_num_fields(result);
+
+    MYSQL_FIELD *fields = mysql_fetch_field(result);
+    while(MYSQL_ROW row = mysql_fetch_row(result)){
+        std::string temp1(row[0]);
+        std::string temp2(row[1]);
+        user_map[temp1] = temp2;
+    }
 }
 
 
 //关闭连接，关闭一个连接，客户总量减一
 void PIGG_http_conn::close_conn(bool real_close){
-
+    //先从连接池中取一个连接
+    MYSQL *PIGG_mysql = NULL;
+    
 }
 
 //初始化连接,外部调用初始化套接字地址
-void PIGG_http_conn::init(int sockfd,const sockaddr_in &addr, char *root, int TrigMode,
+void PIGG_http_conn::init(int sockfd,const sockaddr_in &addr, char *root, int trig_mode,
     int close_log, std::string user,std::string passwd,std::string sqlname){
     PIGG_sockfd = sockfd;
     PIGG_address = addr;
 
-    addfd(PIGG_epollfd, sockfd, true, PIGG_TrigMode);
+    addfd(PIGG_epollfd, sockfd, true, PIGG_trig_mode);
     PIGG_user_count++;  // 用来标记连接池的数量
 
     //当浏览器出现连接重置时，可能是网站根目录出错或http响应格式出错或者访问的文件中内容完全为空
     PIGG_doc_root = root;
-    PIGG_TrigMode = TrigMode;
+    PIGG_trig_mode = trig_mode;
     PIGG_close_log = close_log;
 
     strcpy(sql_user, user.c_str());
@@ -124,7 +145,7 @@ bool PIGG_http_conn::read_once(){
     }
     int bytes_read = 0;
 
-    if(PIGG_TrigMode == 0){  //LT读取数据
+    if(PIGG_trig_mode == 0){  //LT读取数据
         bytes_read = recv(PIGG_sockfd,PIGG_read_buf + PIGG_read_idx, READ_BUFFER_SIZE - PIGG_read_idx,0);
         PIGG_read_idx += bytes_read;
         if(bytes_read <= 0){
@@ -161,13 +182,13 @@ bool PIGG_http_conn::write(){
 void PIGG_http_conn::process(){
     PIGG_HTTP_CODE read_ret = process_read();   // 先把请求读取进来
     if(read_ret == NO_REQUEST){
-        modfd(PIGG_epollfd, PIGG_sockfd, EPOLLIN, PIGG_TrigMode);
+        modfd(PIGG_epollfd, PIGG_sockfd, EPOLLIN, PIGG_trig_mode);
     }
     bool wriet_ret = process_write(read_ret);   // 再将要发送的东西写进去,根据得到的不同请求进行不同的发送
     if(!wriet_ret){
-        // close_conn(true);
+        close_conn(true);
     }
-    modfd(PIGG_epollfd, PIGG_sockfd, EPOLLOUT, PIGG_TrigMode);
+    modfd(PIGG_epollfd, PIGG_sockfd, EPOLLOUT, PIGG_trig_mode);
 }
 
 

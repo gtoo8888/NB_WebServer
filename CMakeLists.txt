@@ -24,9 +24,6 @@ source_group(logserver FILES ${LOG_SRC_LIST})
 file(GLOB_RECURSE TEST_SRC_LIST "PIGG_test/*.cpp" "PIGG_test/*.h")
 source_group(testserver FILES ${TEST_SRC_LIST})
 
-file(GLOB_RECURSE LOCKER_SRC_LIST "PIGG_locker/*.cpp" "PIGG_locker/*.h")
-source_group(testserver FILES ${LOCKER_SRC_LIST})
-
 file(GLOB_RECURSE MYSQL_SRC_LIST "CGImysql/*.cpp" "CGImysql/*.h")
 source_group(mysqlserver FILES ${MYSQL_SRC_LIST})
 
@@ -36,6 +33,11 @@ source_group(httpserver FILES ${HTTP_SRC_LIST})
 file(GLOB_RECURSE TIMER_SRC_LIST "PIGG_timer/*.cpp" "PIGG_timer/*.h")
 source_group(timerserver FILES ${TIMER_SRC_LIST})
 
+file(GLOB_RECURSE LOCKER_SRC_LIST "PIGG_locker/*.h")
+source_group(lockerserver FILES ${LOCKER_SRC_LIST})
+file(GLOB_RECURSE THREAD_SRC_LIST "PIGG_threadpool/*.h")
+source_group(threadserver FILES ${THREAD_SRC_LIST})
+
 add_executable(${PROJECT_NAME}
     ${LOG_SRC_LIST}
     ${TEST_SRC_LIST}
@@ -43,6 +45,7 @@ add_executable(${PROJECT_NAME}
     ${MYSQL_SRC_LIST}
     ${HTTP_SRC_LIST}
     ${TIMER_SRC_LIST}
+    ${THREAD_SRC_LIST}
     main.cpp
     PIGG_config.cpp
     PIGG_webserver.cpp
@@ -65,18 +68,18 @@ target_link_libraries(${PROJECT_NAME} mysqlclient)
 #                 main.cpp PIGG_config.cpp )
 
 
-install(TARGETS ${PROJECT_NAME}
-        CONFIGURATIONS Debug
-        RUNTIME DESTINATION Debug/bin)
-install(TARGETS ${PROJECT_NAME}
-        CONFIGURATIONS Release
-        RUNTIME DESTINATION Release/bin)
+# install(TARGETS ${PROJECT_NAME}
+#         CONFIGURATIONS Debug
+#         RUNTIME DESTINATION Debug/bin)
+# install(TARGETS ${PROJECT_NAME}
+#         CONFIGURATIONS Release
+#         RUNTIME DESTINATION Release/bin)
 
 # 暂时先不安装，减少报错量，不然两遍报错
-install(TARGETS ${PROJECT_NAME}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}     # 可执行二进制文件
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}     # 动态库
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}     # 静态库
-    OBJECTS DESTINATION ${CMAKE_INSTALL_LIBDIR}
-)
+# install(TARGETS ${PROJECT_NAME}
+#     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}     # 可执行二进制文件
+#     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}     # 动态库
+#     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}     # 静态库
+#     OBJECTS DESTINATION ${CMAKE_INSTALL_LIBDIR}
+# )
 

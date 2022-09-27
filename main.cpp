@@ -117,24 +117,27 @@ int main(int argc,char *argv[]){
 
     std::cout << "-----PIGG_server start run------" << std::endl;
     // 解析命令行
-    PIGG_Config PIGG_config;
-    PIGG_config.parse_arg(argc,argv);
+    PIGG_Config config;
+    config.parse_arg(argc,argv);
 
     // 参数初始化
     PIGG_WebServer server;
-    server.init(port, user, passwd, databasename, false, true);
+    server.init(config.port, user, passwd, databasename, 
+    config.opt_linger,config.trig_mode,config.sql_num,config.thread_num,
+        config.actor_model,config.close_log,true);
+
     std::cout << "-----PIGG_WebServer::init()------" << std::endl;
     server.log_write();
     std::cout << "-----PIGG_WebServer::log_write()------" << std::endl;
 
-    PIGG_init_test::PIGG_test test;
-    test.test_log();
+    PIGG_init_test::PIGG_test log_test;
+    log_test.test_log();
 
 
-    // server.sql_pool();  //数据库连接池
-    // std::cout << "-----PIGG_WebServer::sql_pool()------" << std::endl;
-    // server.thread_pool();   //开启线程池
-    // std::cout << "-----PIGG_WebServer::thread_pool()------" << std::endl;
+    server.sql_pool();  //数据库连接池
+    std::cout << "-----PIGG_WebServer::sql_pool()------" << std::endl;
+    server.thread_pool();   //开启线程池
+    std::cout << "-----PIGG_WebServer::thread_pool()------" << std::endl;
     server.init_trig_mod(0,0);    // 默认LT+LT,不选择优雅关闭
     std::cout << "-----PIGG_WebServer::init_trig_mod()------" << std::endl;
     server.event_listen();      // socket通讯的基本流程，开始建立通讯

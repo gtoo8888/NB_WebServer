@@ -3,6 +3,7 @@ CMakeFiles/
 PIGG_output/
 .vscode/*.log
 .vscode/settings.json
+*_ServerLog
 
 
 

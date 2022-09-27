@@ -12,12 +12,12 @@ public:
 
     void parse_arg(int arg,char *argv[]);
 
-    int PORT;               //端口号
-    int LOGWrite;           //日志写入方式
-    int TrigMode;           //触发组合模式
-    int LISTENTrigmode;     //listenfd触发模式 
-    int CONNTrigmode;       //connfd触发模式
-    int OPT_LINGER;         //优雅关闭链接
+    int port;               //端口号
+    int log_write;           //日志写入方式
+    int trig_mode;           //触发组合模式
+    int listen_trig_mode;     //listenfd触发模式 
+    int conn_trig_mode;       //connfd触发模式
+    int opt_linger;         //优雅关闭链接
     int sql_num;             //数据库连接池数量
     int thread_num;             //线程池内的线程数量
     int close_log;          //是否关闭日志  

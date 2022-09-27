@@ -166,11 +166,11 @@ int PIGG_Utils::set_non_blocking(int fd){
 }
 
 //将内核事件表注册读事件，ET模式，选择开启EPOLLONESHOT
-void PIGG_Utils::addfd(int epollfd, int fd, bool one_shot, int TrigMode){
+void PIGG_Utils::addfd(int epollfd, int fd, bool one_shot, int trig_mode){
     epoll_event event;
     event.data.fd = fd;
 
-    if(TrigMode == 1)
+    if(trig_mode == 1)
         event.events = EPOLLIN | EPOLLET | EPOLLRDHUP;
     else
         event.events = EPOLLIN | EPOLLRDHUP;

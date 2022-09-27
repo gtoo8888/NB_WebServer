@@ -14,8 +14,12 @@ int old_option = fcntl(fd,F_GETFL);
 
 setsockopt(PIGG_listenfd, SOL_SOCKET, SO_LINGER, &tmp, sizeof(tmp));
 
-
+throw std::exception();
 struct sigaction sa;
+if(pthread_create(PIGG_threads + i,NULL,worker,this) != 0)
+if(pthread_detach(PIGG_threads[i])){   
+
+
 ```
 我看一些项目用的set当定时器，感觉set是最均衡的
 

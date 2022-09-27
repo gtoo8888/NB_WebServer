@@ -42,12 +42,12 @@ fix:使用阻塞队列插入，但是自己还没有实现阻塞队列的内容�
 3. PIGG_http_conn::read_once()函数没有编写没法使用LT和ET读取数据
 4. 复习了epoll的使用流程，复习epoll相关函数
 
-
 ## 2022-9-23
 1. 增加了很多八股文
 2. 学习定时器的相关操作，了解时间轮的原理
 
-
+## 2022-9-27
+1. 增加了线程池，增加了连接池
 
 ## 注意事项
 1. 使用vscode远程登录调试的时候，需要用root身份登录，不然无法连接数据库
@@ -69,15 +69,18 @@ PIGG_test.cpp/.h
 PIGG_block_queue.h+PIGG_lock.h
 7. http协议的处理
 PIGG_http.cpp/.h
+8. 补充了PIGG_webserver.cpp中epoll连接的部分
+9. 线程池
+PIGG_threadpool.h
+10. mysql连接池
+sql_connection_pool.cpp/.h
 
 
 
-<!-- 8. mysql线程池
-sql_connection_pool.cpp/.h -->
+
 1.数据库可以最后再写上去，因为可以先不存到数据库
-2.写.c文件，具体函数的时候，可以先把函数名字写出来，先搭出框架
+2.写.cpp文件，具体函数的时候，可以先把函数名字写出来，先搭出框架
 3.定时器还没写
-4.线程池还没写
 
 
 # 不会的

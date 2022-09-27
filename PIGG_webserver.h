@@ -15,6 +15,8 @@
 
 #include "./PIGG_http/PIGG_http.h"
 #include "./PIGG_timer/PIGG_lst_timer.h"
+#include "./PIGG_threadpool/PIGG_threadpool.h"
+#include "./CGImysql/sql_connection_pool.h"
 
 const int MAX_EVENT_NUMBER = 10000; //最大事件数
 const int TIMESLOT = 5;//最小超时单位
@@ -26,7 +28,7 @@ public:
     ~PIGG_WebServer();
 
     void init(int port, std::string user, std::string passWord, std::string databaseName,
-                            bool close_log,bool log_queue);
+ int opt_linger, int trig_mode, int sql_num, int thread_num, int actor_model, bool close_log,bool log_queue);
 
     void log_write();
     void sql_pool();   // 初始化mysql的连接池子
@@ -44,23 +46,28 @@ public:
 
     //创建定时器，设置回调函数和超时时间，绑定用户数据，将定时器添加到链表中
     void PIGG_timer(int connfd,struct sockaddr_in clinet_address);
-private:
+public:
     // 基础设置
     int PIGG_port;
     int PIGG_close_log;         // 是否关闭日志
     int PIGG_log_queue;         // 是否要开启日志的阻塞队列
-    int PIGG_actor_model;
+    int PIGG_actor_model;       // 运行模式reactor
 
     PIGG_http_conn* PIGG_http_users;    // 表示整个http连接的类
     char* PIGG_root_path;
 
 
     // 数据库相关
+    PIGG_connection_pool *PIGG_connPool;     // 数据库连接池
     std::string PIGG_user;
     std::string PIGG_password;
     std::string PIGG_databasename;
-    int PIGG_sql_num;   // 数据库的链接数
-    // connection_pool *PIGG_connPool;     // 数据库连接池
+    int PIGG_sql_num;   // 数据库连接数
+    
+
+    //线程池相关
+    PIGG_threadpool<PIGG_http_conn> *PIGG_pool;
+    int PIGG_thread_num;
 
     // epoll_event相关
     epoll_event events[MAX_EVENT_NUMBER];

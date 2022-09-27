@@ -25,21 +25,26 @@ PIGG_WebServer::~PIGG_WebServer(){
     close(PIGG_pipefd[1]);
     close(PIGG_pipefd[0]);
     delete[] PIGG_http_users;
-    // delete[] PIGG_users_timer;
-    // delete[] PIGG_pool;
+    delete[] PIGG_users_timer;
+    delete[] PIGG_pool;
 }
 
 void PIGG_WebServer::init(int port, std::string user, std::string passWord, std::string databaseName,
-                            bool close_log,bool log_queue){
+ int opt_linger, int trig_mode, int sql_num, int thread_num, int actor_model, bool close_log,bool log_queue){
     // 基础配置
     PIGG_port = port;
     PIGG_user = user;
     PIGG_password = passWord;
     PIGG_databasename = databaseName;
+    PIGG_actor_model = actor_model;
 
     // 日志相关
     PIGG_close_log = close_log; // 是否关闭日志,false才是开启日志
     PIGG_log_queue = log_queue; // 开启日志队列
+
+    // 线程池+mysql连接池
+    PIGG_thread_num = thread_num;
+    PIGG_sql_num = sql_num;
 }
 
 void PIGG_WebServer::log_write(){
@@ -51,12 +56,18 @@ void PIGG_WebServer::log_write(){
         PIGG_log::get_instance()->init("./ServerLog",PIGG_close_log, 2000, 800000, 0);
     }
 }
-void PIGG_WebServer::sql_pool(){
 
+void PIGG_WebServer::sql_pool(){
+    //初始化数据库连接池
+    PIGG_connPool = PIGG_connection_pool::GetInstance();
+    PIGG_connPool->init("localhost",PIGG_user,PIGG_password,PIGG_databasename,3306,PIGG_sql_num,PIGG_close_log);
+
+    //初始化数据库读取表
+    PIGG_http_users->init_mysql_result(PIGG_connPool);
 }
 
 void PIGG_WebServer::thread_pool(){
-
+    PIGG_pool = new PIGG_threadpool<PIGG_http_conn>(PIGG_actor_model,PIGG_connPool,PIGG_thread_num);
 }
 
 void PIGG_WebServer::init_trig_mod(int trig_mode,int opt_LINGER){
@@ -303,12 +314,35 @@ void PIGG_WebServer::deal_with_read(int sockfd) {
 
 // 处理写
 void PIGG_WebServer::deal_with_write(int sockfd) {
+    PIGG_util_timer *timer = PIGG_users_timer[sockfd].PIGG_timer;
     // reactor
-    // if (m_actor_model){
-    //     if (timer){
-    //         adjust_timer(timer);
-    //     }
-    // }
+    if (PIGG_actor_model){
+        if (timer){
+            adjust_timer(timer);
+        }
+        // PIGG_pool->
+        while(true){
+            if(PIGG_http_users[sockfd].improv == 1){
+                if(PIGG_http_users[sockfd].timer_flag == 1){
+                    deal_timer(timer,sockfd);
+                    PIGG_http_users[sockfd].timer_flag = 0;
+                }
+                PIGG_http_users[sockfd].improv = 0;
+                break;
+            }
+        }
+    }else {//proactor
+        if(PIGG_http_users[sockfd].write()){
+            LOG_INFO("send data to the client(%s)",inet_ntoa(PIGG_http_users[sockfd].get_address()->sin_addr))
+            if(timer){
+                adjust_timer(timer);
+            }
+        }else{
+            deal_timer(timer,sockfd);
+        }
+
+
+    }
 }
 
 void PIGG_WebServer::PIGG_timer(int connfd,struct sockaddr_in clinet_address){
