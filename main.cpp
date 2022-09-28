@@ -110,7 +110,6 @@ void test_mysql(){
 }
 
 int main(int argc,char *argv[]){
-    int port = 8888;
     std::string user = "root";
     std::string passwd = "root";
     std::string databasename = "yourdb";

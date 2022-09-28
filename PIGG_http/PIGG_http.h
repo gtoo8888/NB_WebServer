@@ -66,8 +66,8 @@ public:
 public:
     void init(int sockfd,const sockaddr_in &addr, char *root, int trig_mode,int close_log, std::string user,std::string passwd,std::string sqlname);
     void close_conn(bool real_close);
-    void process();
-    bool read_once();
+    void process();     //读取浏览器端发来的全部数据
+    bool read_once();   //响应报文写入函数
     bool write();
     void init_mysql_result(PIGG_connection_pool *connPool);
     sockaddr_in *get_address(){
@@ -123,6 +123,8 @@ private:
     int PIGG_start_line;
     char* doc_root; // 存放html的文件夹
     struct stat PIGG_file_stat;
+    struct iovec PIGG_iv[2];
+    int PIGG_iv_count;
     char* PIGG_file_address;
 
     char PIGG_real_file[FILE_NAME_LEN];

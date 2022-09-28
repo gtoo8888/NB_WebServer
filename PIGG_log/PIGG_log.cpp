@@ -108,12 +108,14 @@ void PIGG_log::write_log(int level,const char * format, ...){   // 可变参函�
     PIGG_buf[n + m + 1] = '\0';
     log_str = PIGG_buf; // 要写的东西先存起来
 
-    // if(PIGG_is_async && !PIGG_log_queue->full()){
-    //     PIGG_log_queue->push(log_str);  // 如果一次要写很多日志，那么就先放在阻塞队列里面，一个一个取出来再写
-    // }else {
-    //     fputs(log_str.c_str(),PIGG_fp); // 写到后面的文件描述符里面
-    // }
-    fputs(log_str.c_str(),PIGG_fp); // 暂时先不用阻塞队列
+    if(PIGG_is_async && !PIGG_log_queue->full()){
+        PIGG_log_queue->push(log_str);  // 如果一次要写很多日志，那么就先放在阻塞队列里面，一个一个取出来再写
+    }else {
+        PIGG_mutex.PIGG_lock();
+        fputs(log_str.c_str(),PIGG_fp); // 写到后面的文件描述符里面
+        PIGG_mutex.PIGG_unlock();
+    }
+    // fputs(log_str.c_str(),PIGG_fp); // 暂时先不用阻塞队列
     va_end(valist); // 清理为valist保留的内容    
 }
 

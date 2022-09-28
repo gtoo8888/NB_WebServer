@@ -1,7 +1,7 @@
 #include "PIGG_config.h"
 
 PIGG_Config::PIGG_Config(){
-    port = 9006;               //端口号,默认9006
+    port = 8888;               //端口号,默认8888
     log_write = 0;           //日志写入方式，默认同步
     trig_mode = 0;            //触发组合模式,默认listenfd LT + connfd LT
     listen_trig_mode = 0;         //listenfd触发模式，默认LT

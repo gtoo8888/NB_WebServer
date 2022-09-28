@@ -1,5 +1,6 @@
 #include "PIGG_http.h"
 #include <map>
+#include <sys/uio.h>
 
 int PIGG_http_conn::PIGG_user_count = 0;
 int PIGG_http_conn::PIGG_epollfd = -1;
@@ -34,8 +35,9 @@ void addfd(int epollfd,int fd, bool one_shot, int trig_mode){
 }
 
 // 从内核时间表删除描述符
-void remoefd(int epollfd, int fd){
-
+void removefd(int epollfd, int fd){
+    epoll_ctl(epollfd, EPOLL_CTL_DEL, fd,0);
+    close(fd);
 }
 
 // 将事件重置为EPOLLONESHOT
@@ -82,6 +84,12 @@ void PIGG_http_conn::init_mysql_result(PIGG_connection_pool *connPool){
 void PIGG_http_conn::close_conn(bool real_close){
     //先从连接池中取一个连接
     MYSQL *PIGG_mysql = NULL;
+    if(real_close && (PIGG_sockfd != -1)){
+        printf("close %d\n",PIGG_sockfd);
+        removefd(PIGG_epollfd,PIGG_sockfd);
+        PIGG_sockfd = -1;
+        PIGG_user_count--;
+    }
     
 }
 
@@ -154,28 +162,73 @@ bool PIGG_http_conn::read_once(){
         return true;
     }else{ //ET读数据
         while(true){
+            //从套接字接收数据，存储在m_read_buf缓冲区
             bytes_read = recv(PIGG_sockfd,PIGG_read_buf + PIGG_read_idx, READ_BUFFER_SIZE - PIGG_read_idx,0);
             if(bytes_read == -1){
+                //非阻塞ET模式下，需要一次性将数据读完
                 if(errno == EAGAIN || errno == EWOULDBLOCK)
                     break;
                 return false;         
             }else if(bytes_read == 0){
                 return false;
             }
+            //修改m_read_idx的读取字节数
             PIGG_read_idx += bytes_read;
         }
         return true;
     }
 }
 
-
 void PIGG_http_conn::unmap(){
-
+    if(PIGG_file_address){
+        munmap(PIGG_file_address,PIGG_file_stat.st_size);
+        PIGG_file_address = 0;
+    }
 }
+
 bool PIGG_http_conn::write(){
+    int temp = 0;
+    if(bytes_to_send == 0){
+        modfd(PIGG_epollfd,PIGG_sockfd,EPOLLIN,PIGG_trig_mode);
+        init();
+        return true;
+    }
+    while(1){
+        temp = writev(PIGG_sockfd,PIGG_iv,PIGG_iv_count);
+        if(temp < 0){
+            if(errno == EAGAIN){
+                modfd(PIGG_epollfd,PIGG_sockfd,EPOLLOUT,PIGG_trig_mode);
+                return true;
+            }
+            unmap();
+            return false;
+        }
 
+        bytes_have_send += temp;
+        bytes_to_send -= temp;
+        if(bytes_have_send >= PIGG_iv[0].iov_len){
+            PIGG_iv[0].iov_len = 0;
+            PIGG_iv[1].iov_base = PIGG_file_address + (bytes_have_send - PIGG_write_idx);
+            PIGG_iv[1].iov_len = bytes_to_send;
+        }else{
+            PIGG_iv[0].iov_base = PIGG_file_address + bytes_have_send;
+            PIGG_iv[0].iov_len = PIGG_iv[0].iov_len - bytes_have_send;
+        }
+
+        if(bytes_have_send <= 0){
+            unmap();
+            modfd(PIGG_epollfd,PIGG_sockfd,EPOLLIN,PIGG_trig_mode);
+
+            if(PIGG_linger){
+                init();
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+    }
 }
-
 
 // 整个的处理过程
 // EPOLLIN/EPOLLOUT需要再去理解

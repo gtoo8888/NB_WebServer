@@ -15,7 +15,7 @@ PIGG_WebServer::PIGG_WebServer(){
     strcpy(PIGG_root_path, server_path);
     strcpy(PIGG_root_path, root_path);
 
-    // PIGG_users_timer = new client_data[MAX_FD];
+    PIGG_users_timer = new PIGG_client_data[MAX_FD];    // 需要分配一下空间，不然后面直接报错
 }
 
 // 析构的时候需要delete释放
@@ -50,10 +50,10 @@ void PIGG_WebServer::init(int port, std::string user, std::string passWord, std:
 void PIGG_WebServer::log_write(){
     if(PIGG_log_queue == true){   // 是否写日志，开启就是写
         // 缓冲区长度2000, 一个日志文件记录的最大条数800000, 最大阻塞队列长度800，最多有800个消息可以在队列中等待
-        PIGG_log::get_instance()->init("./ServerLog",PIGG_close_log, 2000, 800000, 800);
+        PIGG_log::get_instance()->init("./PIGG_output/ServerLog",PIGG_close_log, 2000, 800000, 800);
     }else{
         // 关闭了阻塞队列
-        PIGG_log::get_instance()->init("./ServerLog",PIGG_close_log, 2000, 800000, 0);
+        PIGG_log::get_instance()->init("./PIGG_output/ServerLog",PIGG_close_log, 2000, 800000, 0);
     }
 }
 
@@ -180,9 +180,9 @@ void PIGG_WebServer::event_loop(){
                 if(flag == false){
                     LOG_ERROR("%s", "dealclientdata failure");
                 }
-            }else if (events[i].events & EPOLLIN) {     // 处理写数据
+            }else if (events[i].events & EPOLLIN) {     // 处理读数据
                 deal_with_read(sockfd);
-            }else if (events[i].events & EPOLLOUT) {    // 处理读数据
+            }else if (events[i].events & EPOLLOUT) {    // 处理写数据
                 deal_with_write(sockfd);
             }
         }
@@ -279,12 +279,11 @@ void PIGG_WebServer::deal_with_read(int sockfd) {
 
     // reactor
     if(PIGG_actor_model == 1){  // 运行模式
-        
         if(timer){
             adjust_timer(timer);
         }
-         
-        // PIGG_pool->
+        //若监测到读事件，将该事件放入请求队列
+        PIGG_pool->append(PIGG_http_users + sockfd,0);
         while(true){
             if(PIGG_http_users[sockfd].improv){
                 if(PIGG_http_users[sockfd].timer_flag){
@@ -299,7 +298,7 @@ void PIGG_WebServer::deal_with_read(int sockfd) {
         if(PIGG_http_users[sockfd].read_once()){
             LOG_INFO("deal with the client(%s)",inet_ntoa(PIGG_http_users[sockfd].get_address()->sin_addr))
             //若监测到读事件，将该事件放入请求队列
-            // PIGG_pool->
+            PIGG_pool->append_p(PIGG_http_users + sockfd);
             //若有数据传输，则将定时器往后延迟3个单位
             //对其在链表上的位置进行调整
             if(timer){
@@ -320,7 +319,7 @@ void PIGG_WebServer::deal_with_write(int sockfd) {
         if (timer){
             adjust_timer(timer);
         }
-        // PIGG_pool->
+        PIGG_pool->append(PIGG_http_users + sockfd,1);
         while(true){
             if(PIGG_http_users[sockfd].improv == 1){
                 if(PIGG_http_users[sockfd].timer_flag == 1){
@@ -331,7 +330,7 @@ void PIGG_WebServer::deal_with_write(int sockfd) {
                 break;
             }
         }
-    }else {//proactor
+    }else {// proactor
         if(PIGG_http_users[sockfd].write()){
             LOG_INFO("send data to the client(%s)",inet_ntoa(PIGG_http_users[sockfd].get_address()->sin_addr))
             if(timer){
@@ -340,8 +339,6 @@ void PIGG_WebServer::deal_with_write(int sockfd) {
         }else{
             deal_timer(timer,sockfd);
         }
-
-
     }
 }
 
@@ -351,8 +348,9 @@ void PIGG_WebServer::PIGG_timer(int connfd,struct sockaddr_in clinet_address){
     //初始化client_data数据
     //创建定时器，设置回调函数和超时时间，绑定用户数据，将定时器添加到链表中
     //初始化该连接对应的连接资源
-    PIGG_users_timer[connfd].address = clinet_address;
     PIGG_users_timer[connfd].sockfd = connfd;
+    PIGG_users_timer[connfd].address = clinet_address;
+    
 
     PIGG_util_timer *timer = new PIGG_util_timer;    //创建定时器临时变量
     timer->user_data = &PIGG_users_timer[connfd];    //设置定时器对应的连接资源

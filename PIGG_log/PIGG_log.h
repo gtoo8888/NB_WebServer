@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <iostream>
 #include "PIGG_block_queue.h"
+#include "../PIGG_lock/PIGG_lock.h"
+
 //instance 实例
 //async 异步
 //split 分割
@@ -59,8 +61,7 @@ private:
     int PIGG_close_log;        //关闭日志
     PIGG_block_queue<std::string> *PIGG_log_queue;  //存放日志信息的阻塞队列
     // RAII的方式？不过没有析构
-
-    // locker PIGG_mutex;         // 自己封装的锁
+    PIGG_locker PIGG_mutex;         // 自己封装的锁
 };
 
 // 创建一个单例，调整日志等级，确定输入形式，传递参数

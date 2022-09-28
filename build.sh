@@ -24,6 +24,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=.
 make -j${nproc}
 # make install
 ls -lh PIGG_webserve
+ls -l PIGG_webserve
 cd -
 
 if [ "$1"x == "len"x ];then # x为了防止变量为空时报错
