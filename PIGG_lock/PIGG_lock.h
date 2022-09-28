@@ -22,12 +22,12 @@ public:
         }
     }
     PIGG_sem(int num){
-        if(sem_init(&PIGG_sem_t, 0 ,num) != 0){
+        if(sem_init(&PIGG_sem_t, 0 ,num) != 0){ //信号量初始化
             throw std::exception();
         }
     }
     ~PIGG_sem(){
-        sem_destroy(&PIGG_sem_t);
+        sem_destroy(&PIGG_sem_t);//信号量销毁
     }
     bool wait(){
         return sem_wait(&PIGG_sem_t) == 0;

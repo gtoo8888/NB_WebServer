@@ -85,7 +85,7 @@ void PIGG_http_conn::close_conn(bool real_close){
     //先从连接池中取一个连接
     MYSQL *PIGG_mysql = NULL;
     if(real_close && (PIGG_sockfd != -1)){
-        printf("close %d\n",PIGG_sockfd);
+        printf("PIGG_http_conn::close_conn close %d\n",PIGG_sockfd);
         removefd(PIGG_epollfd,PIGG_sockfd);
         PIGG_sockfd = -1;
         PIGG_user_count--;
@@ -125,7 +125,7 @@ void PIGG_http_conn::init(){
     PIGG_version = 0;
     PIGG_host = 0;
     PIGG_start_line = 0;
-    PIGG_checked_idex = 0;
+    PIGG_checked_idx = 0;
     PIGG_read_idx = 0;
     PIGG_write_idx = 0;
     PIGG_cgi = 0;
@@ -234,14 +234,15 @@ bool PIGG_http_conn::write(){
 // EPOLLIN/EPOLLOUT需要再去理解
 void PIGG_http_conn::process(){
     PIGG_HTTP_CODE read_ret = process_read();   // 先把请求读取进来
-    if(read_ret == NO_REQUEST){
-        modfd(PIGG_epollfd, PIGG_sockfd, EPOLLIN, PIGG_trig_mode);
+    if(read_ret == NO_REQUEST){//NO_REQUEST，表示请求不完整，需要继续接收请求数据
+        modfd(PIGG_epollfd, PIGG_sockfd, EPOLLIN, PIGG_trig_mode); //注册并监听读事件
     }
+    //调用process_write完成报文响应
     bool wriet_ret = process_write(read_ret);   // 再将要发送的东西写进去,根据得到的不同请求进行不同的发送
     if(!wriet_ret){
         close_conn(true);
     }
-    modfd(PIGG_epollfd, PIGG_sockfd, EPOLLOUT, PIGG_trig_mode);
+    modfd(PIGG_epollfd, PIGG_sockfd, EPOLLOUT, PIGG_trig_mode);//注册并监听写事件
 }
 
 

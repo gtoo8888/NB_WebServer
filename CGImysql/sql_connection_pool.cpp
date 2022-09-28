@@ -58,7 +58,7 @@ MYSQL* PIGG_connection_pool::GetConnection(){
 }
 
 //释放当前使用的连接
-bool PIGG_connection_pool::RealeaseConnection(MYSQL *con){
+bool PIGG_connection_pool::RealseConnection(MYSQL *con){
     if(con == NULL)
         return false;
     lock.PIGG_lock();   // 加锁
@@ -100,5 +100,5 @@ PIGG_connection_RALL::PIGG_connection_RALL(MYSQL **SQL,PIGG_connection_pool *con
 }
 
 PIGG_connection_RALL::~PIGG_connection_RALL(){
-    PIGG_poolRAII->RealeaseConnection(PIGG_conRAII);
+    PIGG_poolRAII->RealseConnection(PIGG_conRAII);
 }

@@ -18,7 +18,7 @@
 #include "./PIGG_threadpool/PIGG_threadpool.h"
 #include "./CGImysql/sql_connection_pool.h"
 
-const int MAX_EVENT_NUMBER = 10000; //最大事件数
+const int MAX_EVENT_NUMBER = 10; //最大事件数
 const int TIMESLOT = 5;//最小超时单位
 
 

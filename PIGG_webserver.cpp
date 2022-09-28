@@ -180,7 +180,7 @@ void PIGG_WebServer::event_loop(){
                 if(flag == false){
                     LOG_ERROR("%s", "dealclientdata failure");
                 }
-            }else if (events[i].events & EPOLLIN) {     // 处理读数据
+            }else if (events[i].events & EPOLLIN) {     // 处理客户连接上接收到的数据
                 deal_with_read(sockfd);
             }else if (events[i].events & EPOLLOUT) {    // 处理写数据
                 deal_with_write(sockfd);
@@ -227,7 +227,7 @@ bool PIGG_WebServer::deal_client_data(){
         }
         PIGG_timer(connfd, PIGG_client_addr);
     }else{
-        while(1){
+        while(1){ // 需要循环接收数据
             int connfd = accept(PIGG_listenfd, (struct sockaddr *)&PIGG_client_addr,&PIGG_client_addr_len);
             if(connfd < 0){
                 LOG_ERROR("%s:error is:%d","accept error",errno);
@@ -295,17 +295,17 @@ void PIGG_WebServer::deal_with_read(int sockfd) {
             }
         }
     }else{// proactor
-        if(PIGG_http_users[sockfd].read_once()){
+        if(PIGG_http_users[sockfd].read_once()){//读入对应缓冲区
             LOG_INFO("deal with the client(%s)",inet_ntoa(PIGG_http_users[sockfd].get_address()->sin_addr))
-            //若监测到读事件，将该事件放入请求队列
-            PIGG_pool->append_p(PIGG_http_users + sockfd);
+
+            PIGG_http_users[sockfd].process();
+            PIGG_pool->append_p(PIGG_http_users + sockfd);//若监测到读事件，将该事件放入请求队列
             //若有数据传输，则将定时器往后延迟3个单位
             //对其在链表上的位置进行调整
             if(timer){
                 adjust_timer(timer);
             }
-        }else{
-            //服务器端关闭连接，移除对应的定时器
+        }else{            //服务器端关闭连接，移除对应的定时器
             deal_timer(timer,sockfd);
         }
     }

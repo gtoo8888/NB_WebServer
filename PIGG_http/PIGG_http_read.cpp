@@ -5,9 +5,37 @@ PIGG_locker PIGG_http_lock;
 std::map<std::string,std::string> users;
 
 
-// 对每行进行分析
-PIGG_http_conn::PIGG_LINE_STATUS PIGG_http_conn::parse_line(){
+//从状态机，用于分析出一行内容
+//返回值为行的读取状态，有LINE_OK,LINE_BAD,LINE_OPEN
 
+//m_read_idx指向缓冲区m_read_buf的数据末尾的下一个字节
+//m_checked_idx指向从状态机当前正在分析的字节
+PIGG_http_conn::PIGG_LINE_STATUS PIGG_http_conn::parse_line(){
+    char temp;
+    for(; PIGG_checked_idx < PIGG_read_idx;++PIGG_checked_idx){
+        temp = PIGG_read_buf[PIGG_checked_idx];//temp为将要分析的字节
+        if(temp == '\r'){//如果当前是\r字符，则有可能会读取到完整行
+            if((PIGG_checked_idx + 1) == PIGG_read_idx)//下一个字符达到了buffer结尾，则接收不完整，需要继续接收
+                return LINE_OPEN;
+            else if(PIGG_read_buf[PIGG_checked_idx + 1] == '\n'){//下一个字符是\n，将\r\n改为\0\0
+                PIGG_read_buf[PIGG_checked_idx++] = '\0';
+                PIGG_read_buf[PIGG_checked_idx++] = '\0';
+                return LINE_OK;
+            }
+            return LINE_BAD; //如果都不符合，则返回语法错误
+        }else if(temp == '\n'){
+        //如果当前字符是\n，也有可能读取到完整行
+        //一般是上次读取到\r就到buffer末尾了，没有接收完整，再次接收时会出现这种情况
+            if(PIGG_checked_idx > 1 && PIGG_read_buf[PIGG_read_idx - 1] == '\n'){//前一个字符是\r，则接收完整
+                PIGG_read_buf[PIGG_checked_idx - 1] = '\0';
+                PIGG_read_buf[PIGG_checked_idx++] = '\0';
+                return LINE_OK;
+            }
+            return LINE_BAD;
+        }
+    }
+    //并没有找到\r\n，需要继续接收
+    return LINE_OPEN;
 }
 
 //解析http请求行，获得请求方法，目标url及http版本号
@@ -81,7 +109,7 @@ PIGG_http_conn::PIGG_HTTP_CODE PIGG_http_conn::parse_headers(char *text){
 
 //判断http请求是否被完整读入
 PIGG_http_conn::PIGG_HTTP_CODE PIGG_http_conn::parse_content(char *text){
-    if(PIGG_read_idx >= (PIGG_content_length + PIGG_checked_idex)){
+    if(PIGG_read_idx >= (PIGG_content_length + PIGG_checked_idx)){
         text[PIGG_content_length] = '\0';
         PIGG_string = text;
         return GET_REQUEST;
@@ -191,15 +219,22 @@ PIGG_http_conn::PIGG_HTTP_CODE PIGG_http_conn::do_request(){
 }
 
 // 读取的进程
+//m_start_line是行在buffer中的起始位置，将该位置后面的数据赋给text
+//此时从状态机已提前将一行的末尾字符\r\n变为\0\0，所以text可以直接取出完整的行进行解析
 PIGG_http_conn::PIGG_HTTP_CODE PIGG_http_conn::process_read(){  
+    //初始化从状态机状态、HTTP请求解析结果
     PIGG_LINE_STATUS line_status = LINE_OK;
     PIGG_HTTP_CODE ret = NO_REQUEST;
     char *text = 0;
 
+    //这里为什么要写两个判断条件？第一个判断条件为什么这样写？
+    //具体的在主状态机逻辑中会讲解。
+
+    //parse_line为从状态机的具体实现
     while(PIGG_check_status == CHECK_STATE_CONTENT && 
     line_status == LINE_OK || ( (line_status = parse_line()) == LINE_OK) ){
         text = get_line();
-        PIGG_start_line = PIGG_checked_idex;
+        PIGG_start_line = PIGG_checked_idx;
         LOG_INFO("%s", text);
         switch(PIGG_check_status){
             case CHECK_STATE_REQUEST_LINE:{ //核对请求行

@@ -11,7 +11,7 @@
 class PIGG_connection_pool{
 public:
     MYSQL *GetConnection();               //获取数据库连接
-    bool RealeaseConnection(MYSQL *conn); //释放连接
+    bool RealseConnection(MYSQL *conn); //释放连接
     int GetFreeConn();                    //获取连接
     void DestroyPool();                   //销毁所有连接
 
