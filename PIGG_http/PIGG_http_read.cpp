@@ -73,7 +73,9 @@ PIGG_http_conn::PIGG_HTTP_CODE PIGG_http_conn::parse_request_line(char *text){
         PIGG_url = strchr(PIGG_url, '/');
     }
 
-    if(strlen(PIGG_url) == 1)
+    if(!PIGG_url || PIGG_url[0] != '/')
+        return BAD_REQUEST;
+    if(strlen(PIGG_url) == 1)//当url为/时，显示判断界面
         strcat(PIGG_url, "judge.html");
     PIGG_check_status = CHECK_STATE_HEADER;     // 核对头部
     return NO_REQUEST;
@@ -97,7 +99,7 @@ PIGG_http_conn::PIGG_HTTP_CODE PIGG_http_conn::parse_headers(char *text){
         text += 15;
         text += strspn(text," \t");
         PIGG_content_length = atol(text);   // 把参数 str 所指向的字符串转换为一个长整数
-    }else if(strncasecmp(text, "Host:", 5)){
+    }else if(strncasecmp(text, "Host:", 5) == 0){
         text += 5;
         text += strspn(text, " \t");
         PIGG_host = text;
@@ -118,8 +120,8 @@ PIGG_http_conn::PIGG_HTTP_CODE PIGG_http_conn::parse_content(char *text){
 }
 
 PIGG_http_conn::PIGG_HTTP_CODE PIGG_http_conn::do_request(){
-    strcpy(PIGG_real_file, doc_root);   // 把 doc_root 所指向的字符串复制到 PIGG_real_file
-    int len = strlen(doc_root);
+    strcpy(PIGG_real_file, PIGG_doc_root);   // 把 doc_root 所指向的字符串复制到 PIGG_real_file
+    int len = strlen(PIGG_doc_root);
     const char *p = strrchr(PIGG_url, '/');
 
     //处理cgi

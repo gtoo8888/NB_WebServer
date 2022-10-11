@@ -69,7 +69,7 @@ PIGG_actor_model(actor_model),PIGG_thread_number(thread_number),PIGG_max_request
 
 template<typename T>
 PIGG_threadpool<T>::~PIGG_threadpool(){
-    delete[] PIGG_threads;
+    // delete[] PIGG_threads;
 }
 
 template<typename T>

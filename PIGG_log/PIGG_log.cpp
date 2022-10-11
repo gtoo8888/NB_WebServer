@@ -52,12 +52,12 @@ bool PIGG_log::init(const char* file_name,int close_log,int log_buf_size,int spl
         snprintf(log_full_name, 255 ,"%s%d_%02d_%02d_%s",dir_name,
         PIGG_tm.tm_year + 1990,PIGG_tm.tm_mon + 1, PIGG_tm.tm_mday,log_name);
     }
-    
     PIGG_today = PIGG_tm.tm_mday;
 
     PIGG_fp = fopen(log_full_name, "a");    // 用一个指定的参数打开文件，“a”追加的形式
     if(PIGG_fp == NULL){    // 如果为空就失败了
-        return false;
+        printf("PIGG_fp = fopen(log_full_name, \"a\");\n");    // 报错了要有提示
+        return false;   // 这个错误没有被返回
     }
     return true;    // 一直打开着了？感觉有很大的性能问题
 }

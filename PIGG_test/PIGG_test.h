@@ -22,6 +22,7 @@ public:
     void test_fflush();
     void test_cppversion();
     void test_log();
+    void test_fopen();
 };
 
 // PIGG_test::PIGG_test(){

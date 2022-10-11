@@ -110,6 +110,10 @@ void test_mysql(){
 }
 
 int main(int argc,char *argv[]){
+    PIGG_init_test::PIGG_test my_test; // 专门用来测试的函数
+    
+    // my_test.test_fopen();
+
     std::string user = "root";
     std::string passwd = "root";
     std::string databasename = "yourdb";
@@ -123,15 +127,12 @@ int main(int argc,char *argv[]){
     PIGG_WebServer server;
     server.init(config.port, user, passwd, databasename, 
     config.opt_linger,config.trig_mode,config.sql_num,config.thread_num,
-        config.actor_model,config.close_log,true);
-
+        config.actor_model,config.close_log,false);
     std::cout << "-----PIGG_WebServer::init()------" << std::endl;
+
     server.log_write();
+    my_test.test_log();
     std::cout << "-----PIGG_WebServer::log_write()------" << std::endl;
-
-    PIGG_init_test::PIGG_test log_test;
-    log_test.test_log();
-
 
     server.sql_pool();  //数据库连接池
     std::cout << "-----PIGG_WebServer::sql_pool()------" << std::endl;

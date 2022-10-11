@@ -123,7 +123,7 @@ private:
     char* PIGG_string; // 储存请求头数据
     sockaddr_in PIGG_address;
     int PIGG_start_line;    //m_read_buf中已经解析的字符个数
-    char* doc_root; // 存放html的文件夹
+    char* PIGG_doc_root; // 存放html的文件夹
     int PIGG_iv_count;
 
     char PIGG_real_file[FILE_NAME_LEN];
@@ -135,7 +135,6 @@ private:
     int PIGG_linger;        // 是否使用keep-alive
 
     int PIGG_close_log;
-    char* PIGG_doc_root;
 
     int bytes_to_send;  //剩余发送字节数
     int bytes_have_send;    //已发送字节数

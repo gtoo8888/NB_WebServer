@@ -24,9 +24,9 @@ PIGG_WebServer::~PIGG_WebServer(){
     close(PIGG_listenfd);
     close(PIGG_pipefd[1]);
     close(PIGG_pipefd[0]);
-    delete[] PIGG_http_users;
-    delete[] PIGG_users_timer;
-    delete[] PIGG_pool;
+    // delete[] PIGG_http_users;
+    // delete[] PIGG_users_timer;
+    // delete PIGG_pool;
 }
 
 void PIGG_WebServer::init(int port, std::string user, std::string passWord, std::string databaseName,
@@ -47,13 +47,21 @@ void PIGG_WebServer::init(int port, std::string user, std::string passWord, std:
     PIGG_sql_num = sql_num;
 }
 
+// 只有使用./build/PIGG_webserve才能正确创建
 void PIGG_WebServer::log_write(){
     if(PIGG_log_queue == true){   // 是否写日志，开启就是写
         // 缓冲区长度2000, 一个日志文件记录的最大条数800000, 最大阻塞队列长度800，最多有800个消息可以在队列中等待
-        PIGG_log::get_instance()->init("./PIGG_output/ServerLog",PIGG_close_log, 2000, 800000, 800);
+        bool flag = PIGG_log::get_instance()->init("./ServerLog",PIGG_close_log, 2000, 800000, 800);
+        if(flag == false){
+            printf("PIGG_log::get_instance()->init error\n");
+        }
     }else{
         // 关闭了阻塞队列
-        PIGG_log::get_instance()->init("./PIGG_output/ServerLog",PIGG_close_log, 2000, 800000, 0);
+        bool flag = PIGG_log::get_instance()->init("./ServerLog",PIGG_close_log, 2000, 800000, 0);
+        // bool flag = PIGG_log::get_instance()->init("./PIGG_output/ServerLog",PIGG_close_log, 2000, 800000, 0);
+        if(flag == false){
+            printf("PIGG_log::get_instance()->init error\n");
+        }
     }
 }
 
@@ -155,7 +163,6 @@ void PIGG_WebServer::event_loop(){
     bool stop_server = false;
 
     while(!stop_server){
-        LOG_INFO("%s", "epoll_wait");
         int number = epoll_wait(PIGG_epollfd, events, MAX_EVENT_NUMBER, -1);    // 如果没有信号进来，就在这里等着
         LOG_INFO("number:%d", number);
         if(number < 0 && errno != EINTR){
@@ -198,7 +205,11 @@ void PIGG_WebServer::event_loop(){
 
 // 判断时间
 void PIGG_WebServer::adjust_timer(PIGG_util_timer* timer) {
+    time_t cur = time(NULL);
+    timer->expire = cur + 3 * TIMESLOT;
+    PIGG_webserver_utils.PIGG_timer_lst.adjust_timer(timer);
 
+    LOG_INFO("%s","adjust timer once");
 }
 
 // 处理时间
@@ -298,7 +309,7 @@ void PIGG_WebServer::deal_with_read(int sockfd) {
         if(PIGG_http_users[sockfd].read_once()){//读入对应缓冲区
             LOG_INFO("deal with the client(%s)",inet_ntoa(PIGG_http_users[sockfd].get_address()->sin_addr))
 
-            PIGG_http_users[sockfd].process();
+            PIGG_http_users[sockfd].process();  // 这里面进行处理
             PIGG_pool->append_p(PIGG_http_users + sockfd);//若监测到读事件，将该事件放入请求队列
             //若有数据传输，则将定时器往后延迟3个单位
             //对其在链表上的位置进行调整

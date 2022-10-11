@@ -33,7 +33,8 @@ else
     echo "如果需要统计代码行数: ./build.sh len"
 fi
 
-# ./build/PIGG_webserve
+# 只有在根目录下./build/PIGG_webserve不会报错
+# 在build目录下,./PIGG_webserve使用时候fopen()会因为找不到路径而无法写日志
 
 
 
