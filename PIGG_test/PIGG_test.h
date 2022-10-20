@@ -23,6 +23,8 @@ public:
     void test_cppversion();
     void test_log();
     void test_fopen();
+    void test_stat();
+    void test_snprintf();
 };
 
 // PIGG_test::PIGG_test(){

@@ -53,7 +53,11 @@ fix:使用阻塞队列插入，但是自己还没有实现阻塞队列的内容�
 1. 修复fopen无法打开日志的问题，由于中间文件夹不存在
 2. 现在连接，日志正常打印，浏览器没有显示，报出PIGG_http_conn::close_conn close 16问题
 
-
+# 2022-10-20
+1. 第一次调试成功，问题出在存在html文件的目录是写死的，抄的老代码用的"/root"
+在找不到html页面的时候会返回NO_SOURCE，但是不会有日志和打印输出所以一直找不到问题
+2. 现在总是刷新页面会有的时候就无法访问，不知道是什么原因
+3. 使用账号登录的时候会有问题
 
 
 
@@ -98,6 +102,13 @@ sql_connection_pool.cpp/.h
 开个标志位，开始通讯，还是不会搞
 
 
+
+# 优化
+1. 存放资源文件的目录需要检查是否存在，最差情况也需要报提示
+2. 每次新开服务器的时候，应该在日志中给一个明显的提示
+3. 可以解析postman的格式
+
+
 # 扩展
 
 1. 动态资源
@@ -108,13 +119,18 @@ sql_connection_pool.cpp/.h
 
 
 # 参考文献
-[日志系统]https://mp.weixin.qq.com/s?__biz=MzI3NzE0NjcwMg==&mid=2650122657&idx=1&sn=c5ce1d8059c40e4cd6deb42a34f8fe49&chksm=f36bb480c41c3d96f69a9fbbc8e7e1515b8bbec87742f76fa3dfda0019a7b58aa282c3ef9bde&scene=21#wechat_redirect
-[Reactor模型和Proactor模型]https://cloud.tencent.com/developer/article/1488120
-[Reactor模型]https://www.cnblogs.com/CodeBear/p/12567022.html
+[日志系统]https://mp.weixin.qq.com/s?__biz=MzI3NzE0NjcwMg==&mid=2650122657&idx=1&sn=c5ce1d8059c40e4cd6deb42a34f8fe49&chksm=f36bb480c41c3d96f69a9fbbc8e7e1515b8bbec87742f76fa3dfda0019a7b58aa282c3ef9bde&scene=21#wechat_redirect</br>
+[Reactor模型和Proactor模型]https://cloud.tencent.com/developer/article/1488120</br>
+[Reactor模型]https://www.cnblogs.com/CodeBear/p/12567022.html</br>
+[C++检查文件是否存在]https://blog.csdn.net/guotianqing/article/details/100766120</br>
+
+
+
+
 ##### 参考的github仓库
-[TinyWebServer]https://github.com/qinguoyi/TinyWebServer
-[HAHA-WebServer里面添加了json配置]https://github.com/tomatowithpotato/HAHA-WebServer
-[markparticle/WebServer]https://github.com/markparticle/WebServer
+[TinyWebServer]https://github.com/qinguoyi/TinyWebServer</br>
+[HAHA-WebServer里面添加了json配置]https://github.com/tomatowithpotato/HAHA-WebServer</br>
+[markparticle/WebServer]https://github.com/markparticle/WebServer</br>
 [本项目是一个基于Linux 的轻量级Web服务器，能够对浏览器的连接请求进行解析处理，处 理完之后给浏览器客户端返回一个响应，如文字、图片、视频等;
-小顶堆实现定时器系统]https://github.com/huboy-zhao/MyWebserver
-[使用C++11实现数据库连接池连接数据库]https://github.com/xbQAQ/httpServer
+小顶堆实现定时器系统]https://github.com/huboy-zhao/MyWebserver</br>
+[使用C++11实现数据库连接池连接数据库]https://github.com/xbQAQ/httpServer</br>

@@ -33,6 +33,12 @@ else
     echo "如果需要统计代码行数: ./build.sh len"
 fi
 
+if [ "$1"x == "start"x ];then # x为了防止变量为空时报错
+    ./build/PIGG_webserve   # 统计代码行数
+else   
+    echo "如果需要运行代码: ./build.sh start"
+fi
+
 # 只有在根目录下./build/PIGG_webserve不会报错
 # 在build目录下,./PIGG_webserve使用时候fopen()会因为找不到路径而无法写日志
 

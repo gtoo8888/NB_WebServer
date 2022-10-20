@@ -113,6 +113,8 @@ int main(int argc,char *argv[]){
     PIGG_init_test::PIGG_test my_test; // 专门用来测试的函数
     
     // my_test.test_fopen();
+    // my_test.test_stat();
+    my_test.test_snprintf();
 
     std::string user = "root";
     std::string passwd = "root";

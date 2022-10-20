@@ -1,8 +1,22 @@
 #include "PIGG_webserver.h"
 #include <ctime>
+#include <fstream>
 
 const int MAX_FD = 65536;      //最大文件描述符
 
+inline bool exist_file(const char* name){
+    struct stat buffer;
+    if(stat(name,&buffer) < 0){
+        // LOG_WARN("%s","PIGG_WebServer::PIGG_WebServer():html file not exist");   // 日志还没有起来
+        printf("%s","PIGG_WebServer::PIGG_WebServer():html file not exist\n");
+        return false;
+    }else{
+        printf("%s","html file is exist\n");
+        return true;
+    }
+}
+
+// 这是在构造PIGG_WebServer的时候检测的，这个时候日志还没有起来
 PIGG_WebServer::PIGG_WebServer(){
     // 预先为每个可能的客户连接分配一个http_conn对象
     PIGG_http_users = new PIGG_http_conn[MAX_FD];
@@ -10,7 +24,15 @@ PIGG_WebServer::PIGG_WebServer(){
     //root文件夹路径
     char server_path[200];
     getcwd(server_path, 200);
-    char root_path[6] = "/root";
+    // std::string root_path_string = "./html_root";
+    // int root_path_len = root_path_string.size();
+    // char root_path[root_path_len+1];
+    // root_path[root_path_len] = '\0';
+    // for(int i = 0;i < root_path_len;i++){
+    //     root_path[i] = root_path_string[i];
+    // }
+    char root_path[20] = "./html_root";    // 这路径不存在导致资源找不到，这个是以执行代码的目录为准
+    exist_file(root_path);
     PIGG_root_path = (char *)malloc(strlen(server_path) + strlen(root_path) + 1);
     strcpy(PIGG_root_path, server_path);
     strcpy(PIGG_root_path, root_path);

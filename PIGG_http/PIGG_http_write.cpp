@@ -85,12 +85,33 @@ bool PIGG_http_conn::process_write(PIGG_HTTP_CODE read_ret){
                 return false;
             break;
         }
-        case FILE_REQUEST:{
-
+        case FILE_REQUEST:{ // 文件请求
+            add_status_line(200, ok_200_title);
+            if(PIGG_file_stat.st_size != 0){
+                add_headers(PIGG_file_stat.st_size);
+                PIGG_iv[0].iov_base = PIGG_write_buf;
+                PIGG_iv[0].iov_len = PIGG_write_idx;
+                PIGG_iv[1].iov_base = PIGG_file_address;
+                PIGG_iv[1].iov_len = PIGG_file_stat.st_size;
+                PIGG_iv_count = 2;
+                bytes_to_send = PIGG_write_idx + PIGG_file_stat.st_size;
+                return true;
+            }else{
+                const char* ok_string = "<html><body></body></html>";
+                add_headers(strlen(ok_string));
+                if(!add_content(ok_string)){
+                    return false;
+                }
+            }
         }
         default:
             return false;
     }
+    PIGG_iv[0].iov_base = PIGG_write_buf;
+    PIGG_iv[0].iov_len = PIGG_write_idx;
+    PIGG_iv_count = 1;
+    bytes_to_send = PIGG_write_idx;
+    return true;
 }
 
 

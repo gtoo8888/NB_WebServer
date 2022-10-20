@@ -204,8 +204,11 @@ PIGG_http_conn::PIGG_HTTP_CODE PIGG_http_conn::do_request(){
     }else   
         strncpy(PIGG_real_file + len, PIGG_url, FILE_NAME_LEN - len - 1);
 
-    if(stat(PIGG_real_file, &PIGG_file_stat) < 0)       // 获取文件信息
+    if(stat(PIGG_real_file, &PIGG_file_stat) < 0){       // 获取文件信息
+        LOG_ERROR("PIGG_http_conn::do_request():%s","NO_SOURCE");
+        printf("PIGG_http_conn::do_request():%s\n","NO_SOURCE");
         return NO_SOURCE;   // 没有资源
+    }
 
     if(!(PIGG_file_stat.st_mode & S_IROTH))
         return FORBIDDEN_REQUEST;
@@ -233,8 +236,8 @@ PIGG_http_conn::PIGG_HTTP_CODE PIGG_http_conn::process_read(){
     //具体的在主状态机逻辑中会讲解。
 
     //parse_line为从状态机的具体实现
-    while(PIGG_check_status == CHECK_STATE_CONTENT && 
-    line_status == LINE_OK || ( (line_status = parse_line()) == LINE_OK) ){
+    while((PIGG_check_status == CHECK_STATE_CONTENT && line_status == LINE_OK) 
+    || ( (line_status = parse_line()) == LINE_OK) ){
         text = get_line();
         PIGG_start_line = PIGG_checked_idx;
         LOG_INFO("%s", text);
