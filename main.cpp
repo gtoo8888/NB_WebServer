@@ -82,7 +82,7 @@ void test_mysql(){
         strcat(sql_insert, "', '");
         strcat(sql_insert, password);
         strcat(sql_insert, "')");
-        std::cout << sql_insert << std::endl;
+        // std::cout << sql_insert << std::endl;
         if(mysql_query(conn, sql_insert))
         {
             std::cout << mysql_error(conn);
@@ -114,7 +114,14 @@ int main(int argc,char *argv[]){
     
     // my_test.test_fopen();
     // my_test.test_stat();
-    my_test.test_snprintf();
+    // my_test.test_snprintf();
+    // my_test.test_char_get_val();
+    // my_test.test_str_some();
+    // test_mysql();
+    // my_test.test_pthread();
+    // my_test.test_pthread2();
+    // my_test.test_pthread3();
+    my_test.test_pthread4();
 
     std::string user = "root";
     std::string passwd = "root";
@@ -145,7 +152,7 @@ int main(int argc,char *argv[]){
     server.event_listen();      // socket通讯的基本流程，开始建立通讯
     std::cout << "-----PIGG_WebServer::event_listen()------" << std::endl;
     std::cout << "-----enent_loop()start------" << std::endl;
-    server.event_loop();           // 整个主程序在这里循环
+    // server.event_loop();           // 整个主程序在这里循环
     
 
 
@@ -153,7 +160,7 @@ int main(int argc,char *argv[]){
     // PIGG_init_test::PIGG_test main_PIGG_test;        // 普通的生成一个类的实例的调用方法     
     // main_PIGG_test.test_fflush();
     // qDebug() << QString("imagesNum:%1, ").arg(123)
-    // test_mysql();
+    
     return 0;
 }
 

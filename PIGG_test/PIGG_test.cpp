@@ -118,6 +118,7 @@ inline bool exists_test3(const std::string& name){
     return (stat(name.c_str(),&buffer) == 0);
 }
 
+// 使用stat
 void PIGG_test::test_stat(){
     struct stat sb;
     char server_path[200];
@@ -184,6 +185,125 @@ void PIGG_test::test_snprintf(){
     i = snprintf(a, 9, "%012d", 12345);   // 第 2 种情况，超出的截断，只复制1到数组a中
     printf("i = %lu, a = %s\n", i, a);    // 输出：i = 12, a = 00000001，9位
 }
+
+
+// 对char数组进行赋值
+void PIGG_test::test_char_get_val(){
+    char str1[40];
+    strcpy(str1, "This is a test1");
+    printf("%s\n",str1);
+
+    char str2[40];
+    memset(str2,'a',sizeof(str2));
+    printf("%s\n",str2);
+
+    char str3[40];
+    memset(str3,'a',sizeof(str3));
+    strcpy(str3, "This is a test3"); // 会覆盖掉之前的
+    printf("%s\n",str3);
+
+    char str4[] = "This is a test4";
+    printf("%s %d\n",str4,strlen(str4));
+
+    char* str5 = "This is a test5";
+    printf("%s %d\n",str5,strlen(str5));
+}
+
+
+// char *strcpy(char *dest, const char *src) // 把 src 所指向的字符串复制到 dest
+// char *strncpy(char *dest, const char *src, size_t n) // 把 src 所指向的字符串复制到 dest，最多复制 n 个字符
+// char *strcat(char *dest, const char *src) // 把 src 所指向的字符串追加到 dest 所指向的字符串的结尾
+// char *strpbrk(const char *str1, const char *str2) //检索字符串 str1 中第一个匹配字符串 str2 中字符的字符，不包含空结束字符
+// int strcmp(const char *str1, const char *str2) //把 str1 所指向的字符串和 str2 所指向的字符串进行比较。
+// int strcasecmp (const char *s1, const char *s2); // C语言中判断字符串是否相等的函数，忽略大小写。s1和s2中的所有字母字符在比较之前都转换为小写
+// int strncasecmp(const char *s1, const char *s2, size_t n);   // 比较参数s1 和s2 字符串前n个字符，比较时会自动忽略大小写的差异。
+// size_t strspn(const char *str1, const char *str2) // 检索字符串 str1 中第一个不在字符串 str2 中出现的字符下标。
+// size_t strlen(const char *str) // 计算字符串 str 的长度，直到空结束字符，但不包括空结束字符。
+// char *strrchr(const char *str, int c) // 在参数 str 所指向的字符串中搜索最后一次出现字符 c（一个无符号字符）的位置。
+
+// string.h库中的一系列函数
+void PIGG_test::test_str_some(){
+    char src[] = "This is dest";
+    char dest[100];
+    memset(dest, '\0',sizeof(dest));
+    strcpy(dest, src);
+    printf("src : %s\n",src);
+    printf("dest : %s\n",dest);
+
+
+    strcat(dest,src);
+    printf("dest : %s\n",dest);
+
+
+    char str1[] = "abcdefg3jkl41";
+    char str2[] = "34";
+    char* ret;
+    ret = strpbrk(str1, str2);
+    if(ret){
+       printf("第一个匹配的字符 %c %d\n",*ret,ret);    
+    }
+
+
+    char str3[] = "abcde";
+    char str4[] = "ABCDE";
+
+    int ret2;
+    ret2 = strcmp(str1,str2);
+    if(ret < 0){
+        printf("str1 < str2\n");    
+    }else if(ret > 0){
+        printf("str1 > str2\n");  
+    }else{
+        printf("str1 = str2\n"); 
+    }
+
+    char s1[] = "aBcDeD";
+    char s2[] = "AbCdEd";
+    char s3[] = "abcdefg";
+    char s4[] = "bacdefg";
+
+    int len = strcasecmp(s1,s2);
+    if(!len){
+        printf("%s = %s\n",s1,s2);
+    }else{
+        printf("%s != %s, %d\n",s1,s2,len);
+    }
+
+    len = strcasecmp(s1,s3);
+    if(!len){
+        printf("%s = %s\n",s1,s3);
+    }else{
+        printf("%s != %s, %d\n",s1,s3,len);
+    }
+
+    len = strcasecmp(s1,s4);
+    if(!len){
+        printf("%s = %s\n",s1,s4);
+    }else{
+        printf("%s != %s, %d\n",s1,s4,len);
+    }
+
+
+    char *a = "aBaDeF";
+    char *b = "AbafdEf";
+    if(!strncasecmp(a, b, 4))   // 如果错误返回-2
+        printf("%s = %s\n", a, b);
+    else
+        printf("%d\n", strncasecmp(a, b, 4));
+
+
+    char str10[] = "ABCDEFG019874";
+    char str11[] = "ABCDFA";
+    len = strspn(str10, str11);
+    printf("初始段匹配长度 %d\n", len );
+
+   const char str12[] = "https://www.runoob.com";
+   const char ch = '.';
+   const char *ret3 = strrchr(str12, ch);
+ 
+   printf("|%c| 之后的字符串是 - |%s|\n", ch, ret3);
+}
+
 
 
 

@@ -60,19 +60,20 @@ void modfd(int epollfd, int fd, int ev ,int trig_mode){
 
 
 void PIGG_http_conn::init_mysql_result(PIGG_connection_pool *connPool){
-    MYSQL* mysql = NULL;
+    MYSQL* mysql = NULL;//先从连接池中取一个连接
     PIGG_connection_RALL PIGG_mysqlcon(&mysql, connPool);
 
+    //在user表中检索username，passwd数据，浏览器端输入
     if(mysql_query(mysql,"SELECT username,passwd FROM user")){
         LOG_ERROR("SELECT error:%s\n",mysql_error(mysql));
     }
 
-    MYSQL_RES *result = mysql_store_result(mysql);
+    MYSQL_RES *result = mysql_store_result(mysql);//从表中检索完整的结果集
 
-    int num_fields = mysql_num_fields(result);
+    int num_fields = mysql_num_fields(result);//返回结果集中的列数
 
-    MYSQL_FIELD *fields = mysql_fetch_field(result);
-    while(MYSQL_ROW row = mysql_fetch_row(result)){
+    MYSQL_FIELD *fields = mysql_fetch_field(result);//返回所有字段结构的数组
+    while(MYSQL_ROW row = mysql_fetch_row(result)){//从结果集中获取下一行，将对应的用户名和密码，存入map中
         std::string temp1(row[0]);
         std::string temp2(row[1]);
         user_map[temp1] = temp2;

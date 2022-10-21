@@ -24,6 +24,7 @@ PIGG_WebServer::PIGG_WebServer(){
     //root文件夹路径
     char server_path[200];
     getcwd(server_path, 200);
+    printf("%s\n",server_path);
     // std::string root_path_string = "./html_root";
     // int root_path_len = root_path_string.size();
     // char root_path[root_path_len+1];
@@ -31,7 +32,8 @@ PIGG_WebServer::PIGG_WebServer(){
     // for(int i = 0;i < root_path_len;i++){
     //     root_path[i] = root_path_string[i];
     // }
-    char root_path[20] = "./html_root";    // 这路径不存在导致资源找不到，这个是以执行代码的目录为准
+    // char root_path[20] = "./html_root";    // 这路径不存在导致资源找不到，这个是以执行代码的目录为准
+    char root_path[20] = "../html_root";    // 调试的时候用
     exist_file(root_path);
     PIGG_root_path = (char *)malloc(strlen(server_path) + strlen(root_path) + 1);
     strcpy(PIGG_root_path, server_path);

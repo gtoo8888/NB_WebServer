@@ -113,11 +113,11 @@ PIGG_http_conn::PIGG_HTTP_CODE PIGG_http_conn::parse_headers(char *text){
 PIGG_http_conn::PIGG_HTTP_CODE PIGG_http_conn::parse_content(char *text){
     if(PIGG_read_idx >= (PIGG_content_length + PIGG_checked_idx)){
         text[PIGG_content_length] = '\0';
-        PIGG_string = text;
+        PIGG_string = text;//POST请求中最后为输入的用户名和密码
         return GET_REQUEST;
     }
     return NO_REQUEST;
-}
+ }
 
 PIGG_http_conn::PIGG_HTTP_CODE PIGG_http_conn::do_request(){
     strcpy(PIGG_real_file, PIGG_doc_root);   // 把 doc_root 所指向的字符串复制到 PIGG_real_file
@@ -125,6 +125,7 @@ PIGG_http_conn::PIGG_HTTP_CODE PIGG_http_conn::do_request(){
     const char *p = strrchr(PIGG_url, '/');
 
     //处理cgi
+    // PIGG_cgi=1对应POST请求
     if(PIGG_cgi == 1 && (*(p+1) == '2' || *(p+1) == '3')){
         char flag = PIGG_url[1];
         char *PIGG_url_real = (char*)malloc(sizeof(char) * 200);
@@ -142,24 +143,28 @@ PIGG_http_conn::PIGG_HTTP_CODE PIGG_http_conn::do_request(){
         name[i-5] = '\0';
 
         int j = 0;
-        for(i = i + 10;PIGG_string[i] != '\0';j++)
+        for(i = i + 10;PIGG_string[i] != '\0';i++,j++)  // 漏写i++
             passwd[j] = PIGG_string[i];
         passwd[j] = '\0';
 
         if(*(p+1) == '3'){
             char *sql_insert = (char *)malloc(sizeof(char) * 200) ;
             strcpy(sql_insert, "insert into user(username,passwd) VALUES(");
-            strcpy(sql_insert, "'");
-            strcpy(sql_insert, name);
-            strcpy(sql_insert, ",'");
-            strcpy(sql_insert, passwd);
-            strcpy(sql_insert, ")");
+            strcat(sql_insert, "'");    // 后面都把strcat写成了strcpy，直接覆盖掉了
+            strcat(sql_insert, name);
+            strcat(sql_insert, "', '");  // 语句输入的时候漏掉了'
+            strcat(sql_insert, passwd);
+            strcat(sql_insert, "')");
 
             if (users.find(name) == users.end()){   // 检查是否重名，如果不重名，插入用户名
-                // PIGG_http_lock.PIGG_lock();
-                int res = mysql_query(mysql, sql_insert);
+                PIGG_http_lock.PIGG_lock();
+                printf("%s\n",sql_insert);
+                if(mysql_query(mysql, sql_insert)){    // 插入失败应该有报错，不然程序直接崩溃了
+                    printf("Query failed (%s)\n",mysql_error(mysql));
+                }
                 users.insert(std::pair<std::string,std::string>(name,passwd));
                 PIGG_http_lock.PIGG_unlock();
+                int res = mysql_query(mysql, sql_insert);
 
                 if(!res)
                     strcpy(PIGG_url, "/log.html");

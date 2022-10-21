@@ -59,7 +59,9 @@ fix:使用阻塞队列插入，但是自己还没有实现阻塞队列的内容�
 2. 现在总是刷新页面会有的时候就无法访问，不知道是什么原因
 3. 使用账号登录的时候会有问题
 
-
+# 2022-10-21
+1. 登录的时候数据库出现问题，怀疑是线程池调试有问题，现在看到MYSQL没有创建对象
+2. 创建了str和pthread的测试程序
 
 ## 注意事项
 1. 使用vscode远程登录调试的时候，需要用root身份登录，不然无法连接数据库
@@ -123,6 +125,7 @@ sql_connection_pool.cpp/.h
 [Reactor模型和Proactor模型]https://cloud.tencent.com/developer/article/1488120</br>
 [Reactor模型]https://www.cnblogs.com/CodeBear/p/12567022.html</br>
 [C++检查文件是否存在]https://blog.csdn.net/guotianqing/article/details/100766120</br>
+[多线程编程之条件变量]https://blog.csdn.net/lovecodeless/article/details/24929273</br>
 
 
 

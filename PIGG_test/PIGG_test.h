@@ -25,6 +25,16 @@ public:
     void test_fopen();
     void test_stat();
     void test_snprintf();
+    void test_char_get_val();
+    void test_str_some();
+
+
+
+
+    void test_pthread();
+    void test_pthread2();
+    void test_pthread3();
+    void test_pthread4();
 };
 
 // PIGG_test::PIGG_test(){
