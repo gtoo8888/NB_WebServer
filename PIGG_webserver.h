@@ -13,10 +13,12 @@
 #include <arpa/inet.h> //htons(),inet_pton()
 #include <signal.h> // SIGALRM,SIGTERM
 
+#include "./PIGG_config/PIGG_config.h"
 #include "./PIGG_http/PIGG_http.h"
 #include "./PIGG_timer/PIGG_lst_timer.h"
 #include "./PIGG_threadpool/PIGG_threadpool.h"
 #include "./CGImysql/sql_connection_pool.h"
+
 
 const int MAX_EVENT_NUMBER = 10; //最大事件数
 const int TIMESLOT = 5;//最小超时单位
@@ -27,8 +29,7 @@ public:
     PIGG_WebServer();
     ~PIGG_WebServer();
 
-    void init(int port, std::string user, std::string passWord, std::string databaseName,
- int opt_linger, int trig_mode, int sql_num, int thread_num, int actor_model, bool close_log,bool log_queue);
+    void init(PIGG_Config& temp_config);
 
     void log_write();
     void sql_pool();   // 初始化mysql的连接池子
@@ -51,6 +52,9 @@ public:
     int PIGG_port;
     int PIGG_close_log;         // 是否关闭日志
     int PIGG_log_queue;         // 是否要开启日志的阻塞队列
+    int PIGG_log_record_max;         // 日志文件记录的最大条数
+    int PIGG_block_queue_max_len;    // 最大阻塞队列长度
+    int PIGG_block_queue_max_wait;  // 最多有多少个消息可以在队列中等待
     int PIGG_actor_model;       // 运行模式reactor
 
     PIGG_http_conn* PIGG_http_users;    // 表示整个http连接的类

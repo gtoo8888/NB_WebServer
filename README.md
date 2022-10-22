@@ -10,11 +10,16 @@ GNU Make 4.2.1 <br/>
 Ubuntu 20.04.3 LTS <br/>
 Linux version 5.13.0-48-generic <br/>
 
-
+查看g++的包含路径
+g++ -v -E -x c++ - 
 ## 需要安装的软件
-sudo apt-get install libmysqlclient-dev -y // mysql的头文件<br/>
-sudo apt-get install cmake -y<br/>
-sudo apt-get install g++ -y // gcc可能不全面，导致没有g++<br/>
+```shell
+sudo apt-get install libmysqlclient-dev -y // mysql的头文件
+sudo apt-get install libjsoncpp-dev // jsoncpp的头文件
+sudo apt-get install cmake -y
+sudo apt-get install g++ -y // gcc可能不全面，导致没有g++
+sudo apt-get install libc6-dev-amd64 // 解决vscode大量找不到头文件问题
+```
 
 ## 编译方法
 ./build.sh  这是shell脚本，里面调用cmake进行编译 <br/>

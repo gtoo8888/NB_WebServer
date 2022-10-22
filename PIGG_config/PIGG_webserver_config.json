@@ -1,0 +1,23 @@
+{
+    "user"  : "root",
+    "passwd"  : "root",
+    "databasename"  : "yourdb",
+    "port" : 8888,               //端口号,默认8888
+    
+    "log_write" : false,           //日志写入方式，默认同步
+    "log_record_max" : 800000,         // 日志文件记录的最大条数
+    "block_queue_max_len" : 2000,    // 最大阻塞队列长度
+    "block_queue_max_wait" : 800,  // 最多有多少个消息可以在队列中等待
+
+    "trig_mode" : false,            //触发组合模式,默认listenfd LT + connfd LT
+    "listen_trig_mod" : false,         //listenfd触发模式，默认LT
+    "conn_trig_mode" : false,       //connfd触发模式，默认LT
+    "opt_linger" : false,          //优雅关闭连接，默认不使用
+    "sql_num" : 8,            //数据库连接池数量,默认8
+    "thread_num" : 1,             //线程池内的线程数量,默认8
+    "close_log" : true,           //关闭日志,默认不关闭,1是开启
+    "actor_model" : false,         //并发模型,默认是proactor
+    "html_root" : "/html_root",    // 这路径不存在导致资源找不到，这个是以执行代码的目录为准
+    // "html_root" : "../html_root",    // 调试的时候用,现在用不了了
+    "log_queue" : false        // 是否开启日志队列
+}

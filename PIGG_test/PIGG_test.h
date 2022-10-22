@@ -35,6 +35,12 @@ public:
     void test_pthread2();
     void test_pthread3();
     void test_pthread4();
+
+
+
+    void test_json1_read();
+    void test_json2_write();
+    void test_json3();
 };
 
 // PIGG_test::PIGG_test(){

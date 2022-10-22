@@ -2,13 +2,17 @@
 #include <ctime>
 #include <fstream>
 
+#define _DEBUG
+
+
 const int MAX_FD = 65536;      //最大文件描述符
 
 inline bool exist_file(const char* name){
+    printf("%s\n",name);
     struct stat buffer;
     if(stat(name,&buffer) < 0){
         // LOG_WARN("%s","PIGG_WebServer::PIGG_WebServer():html file not exist");   // 日志还没有起来
-        printf("%s","PIGG_WebServer::PIGG_WebServer():html file not exist\n");
+        printf("%s","\n!!!!!!PIGG_WebServer::PIGG_WebServer():html file not exist!!!!!\n\n");
         return false;
     }else{
         printf("%s","html file is exist\n");
@@ -20,25 +24,6 @@ inline bool exist_file(const char* name){
 PIGG_WebServer::PIGG_WebServer(){
     // 预先为每个可能的客户连接分配一个http_conn对象
     PIGG_http_users = new PIGG_http_conn[MAX_FD];
-
-    //root文件夹路径
-    char server_path[200];
-    getcwd(server_path, 200);
-    printf("%s\n",server_path);
-    // std::string root_path_string = "./html_root";
-    // int root_path_len = root_path_string.size();
-    // char root_path[root_path_len+1];
-    // root_path[root_path_len] = '\0';
-    // for(int i = 0;i < root_path_len;i++){
-    //     root_path[i] = root_path_string[i];
-    // }
-    // char root_path[20] = "./html_root";    // 这路径不存在导致资源找不到，这个是以执行代码的目录为准
-    char root_path[20] = "../html_root";    // 调试的时候用
-    exist_file(root_path);
-    PIGG_root_path = (char *)malloc(strlen(server_path) + strlen(root_path) + 1);
-    strcpy(PIGG_root_path, server_path);
-    strcpy(PIGG_root_path, root_path);
-
     PIGG_users_timer = new PIGG_client_data[MAX_FD];    // 需要分配一下空间，不然后面直接报错
 }
 
@@ -52,36 +37,55 @@ PIGG_WebServer::~PIGG_WebServer(){
     // delete[] PIGG_users_timer;
     // delete PIGG_pool;
 }
-
-void PIGG_WebServer::init(int port, std::string user, std::string passWord, std::string databaseName,
- int opt_linger, int trig_mode, int sql_num, int thread_num, int actor_model, bool close_log,bool log_queue){
+void PIGG_WebServer::init(PIGG_Config& temp_config){
     // 基础配置
-    PIGG_port = port;
-    PIGG_user = user;
-    PIGG_password = passWord;
-    PIGG_databasename = databaseName;
-    PIGG_actor_model = actor_model;
+    PIGG_port = temp_config.port;
+    PIGG_user = temp_config.user;
+    PIGG_password = temp_config.passwd;
+    PIGG_databasename = temp_config.databasename;
+    PIGG_actor_model = temp_config.actor_model;
 
     // 日志相关
-    PIGG_close_log = close_log; // 是否关闭日志,false才是开启日志
-    PIGG_log_queue = log_queue; // 开启日志队列
+    PIGG_close_log = temp_config.close_log; // 是否关闭日志,false才是开启日志
+    PIGG_log_queue = temp_config.log_queue; // 开启日志队列
+    PIGG_log_record_max = temp_config.log_record_max;         // 日志文件记录的最大条数 800000
+    PIGG_block_queue_max_len = temp_config.block_queue_max_len;    // 最大阻塞队列长度 2000
+    PIGG_block_queue_max_wait = temp_config.block_queue_max_wait;  // 最多有多少个消息可以在队列中等待 800
 
     // 线程池+mysql连接池
-    PIGG_thread_num = thread_num;
-    PIGG_sql_num = sql_num;
+    PIGG_thread_num = temp_config.thread_num;
+    PIGG_sql_num = temp_config.sql_num;
+
+
+    //root文件夹路径
+    char server_path[200];
+    getcwd(server_path, 200);   // 检测当前可执行文件位置
+    // printf("%s\n",server_path);
+    const char* root_path = temp_config.html_root.c_str(); // 只需要将string首地址传过去就可以了 
+    // exist_file(root_path);
+    PIGG_root_path = (char *)malloc(strlen(server_path) + strlen(root_path) + 1);
+    strcpy(PIGG_root_path, server_path);
+    strcat(PIGG_root_path, root_path);  // fix:覆盖了
+    #ifdef _DEBUG  // 为了vscode调试使用
+        PIGG_root_path = "/data_hdd/PIGG_WebServer/html_root";  
+        printf("_DEBUG\n");
+    #endif
+    exist_file(PIGG_root_path);
 }
 
 // 只有使用./build/PIGG_webserve才能正确创建
 void PIGG_WebServer::log_write(){
     if(PIGG_log_queue == true){   // 是否写日志，开启就是写
-        // 缓冲区长度2000, 一个日志文件记录的最大条数800000, 最大阻塞队列长度800，最多有800个消息可以在队列中等待
-        bool flag = PIGG_log::get_instance()->init("./ServerLog",PIGG_close_log, 2000, 800000, 800);
+        // 缓冲区长度2000, 一个日志文件记录的最大条数800000, 最大阻塞队列长度2000，最多有800个消息可以在队列中等待
+        bool flag = PIGG_log::get_instance()->init("./ServerLog",PIGG_close_log, 
+        PIGG_block_queue_max_wait, PIGG_log_record_max, PIGG_block_queue_max_len);
         if(flag == false){
             printf("PIGG_log::get_instance()->init error\n");
         }
     }else{
         // 关闭了阻塞队列
-        bool flag = PIGG_log::get_instance()->init("./ServerLog",PIGG_close_log, 2000, 800000, 0);
+        bool flag = PIGG_log::get_instance()->init("./ServerLog",PIGG_close_log, 
+        PIGG_block_queue_max_wait, PIGG_log_record_max, 0);
         // bool flag = PIGG_log::get_instance()->init("./PIGG_output/ServerLog",PIGG_close_log, 2000, 800000, 0);
         if(flag == false){
             printf("PIGG_log::get_instance()->init error\n");

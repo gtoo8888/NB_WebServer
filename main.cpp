@@ -4,17 +4,16 @@
 #include <stdio.h>
 #include <sstream>
 #include <memory> //shared_ptr
-#include "PIGG_config.h"
+#include "PIGG_config/PIGG_config.h"
 #include "PIGG_log/PIGG_log.h"
 #include "PIGG_test/PIGG_test.h"
 #include "PIGG_lock/PIGG_lock.h"
+#include "PIGG_webserver.h"
 #include <mysql/mysql.h>
 
-#include "PIGG_config.h"
 // #include <QDebug>
 // #include <QObject>
 // #include <QTimer>
-
 
 
 void test_namespace(){  // 对命名空间使用的测试
@@ -109,9 +108,10 @@ void test_mysql(){
     mysql_close(conn);
 }
 
-int main(int argc,char *argv[]){
+
+void test_all(){
     PIGG_init_test::PIGG_test my_test; // 专门用来测试的函数
-    
+
     // my_test.test_fopen();
     // my_test.test_stat();
     // my_test.test_snprintf();
@@ -121,7 +121,15 @@ int main(int argc,char *argv[]){
     // my_test.test_pthread();
     // my_test.test_pthread2();
     // my_test.test_pthread3();
-    my_test.test_pthread4();
+    // my_test.test_pthread4();
+    // my_test.test_json1_read();
+    // my_test.test_json2_write();
+    my_test.test_json3();
+}
+
+int main(int argc,char *argv[]){
+    // test_all();
+    PIGG_init_test::PIGG_test my_test; // 专门用来测试的函数
 
     std::string user = "root";
     std::string passwd = "root";
@@ -134,9 +142,7 @@ int main(int argc,char *argv[]){
 
     // 参数初始化
     PIGG_WebServer server;
-    server.init(config.port, user, passwd, databasename, 
-    config.opt_linger,config.trig_mode,config.sql_num,config.thread_num,
-        config.actor_model,config.close_log,false);
+    server.init(config);
     std::cout << "-----PIGG_WebServer::init()------" << std::endl;
 
     server.log_write();
@@ -152,7 +158,7 @@ int main(int argc,char *argv[]){
     server.event_listen();      // socket通讯的基本流程，开始建立通讯
     std::cout << "-----PIGG_WebServer::event_listen()------" << std::endl;
     std::cout << "-----enent_loop()start------" << std::endl;
-    // server.event_loop();           // 整个主程序在这里循环
+    server.event_loop();           // 整个主程序在这里循环
     
 
 

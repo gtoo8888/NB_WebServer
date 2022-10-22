@@ -8,7 +8,6 @@
 ## 2022-7-25
 1. 学习了namespace和share_ptr是怎么使用的
 
-
 ## 2022-7-30
 1. 之前发现使用语句，但是日志无法写入
 fix:使用阻塞队列插入，但是自己还没有实现阻塞队列的内容，导致一直是空实现，就没法写进去了
@@ -63,6 +62,10 @@ fix:使用阻塞队列插入，但是自己还没有实现阻塞队列的内容�
 1. 登录的时候数据库出现问题，怀疑是线程池调试有问题，现在看到MYSQL没有创建对象
 2. 创建了str和pthread的测试程序
 
+# 2022-10-22
+1. 增加了jsoncpp库，用json文件来保存配置文件，增加了json的练习，将json加入cmake编译，将配置程序单独存放起来
+2. 再修复了一下html网页的文件找不到的问题，之前strcat抄成了strcpy
+
 ## 注意事项
 1. 使用vscode远程登录调试的时候，需要用root身份登录，不然无法连接数据库
 2. 查找相关的帮助 ```man pthread_cond_broadcast```
@@ -88,7 +91,8 @@ PIGG_http.cpp/.h
 PIGG_threadpool.h
 10. mysql连接池
 sql_connection_pool.cpp/.h
-
+11. 使用json作为配置文件
+PIGG_webserver_config.json
 
 
 
@@ -102,7 +106,9 @@ sql_connection_pool.cpp/.h
 2.信号量
 3.PIGG_http_conn::process()中的modfd
 开个标志位，开始通讯，还是不会搞
-
+4.编译第三方库进cmake到底怎么做，/user/local/目录下的不会用
+5.apt安装的文件在哪里
+6.cmake到底在哪里找.cmake
 
 
 # 优化
@@ -126,6 +132,10 @@ sql_connection_pool.cpp/.h
 [Reactor模型]https://www.cnblogs.com/CodeBear/p/12567022.html</br>
 [C++检查文件是否存在]https://blog.csdn.net/guotianqing/article/details/100766120</br>
 [多线程编程之条件变量]https://blog.csdn.net/lovecodeless/article/details/24929273</br>
+[Cmakelists.txt添加jsoncpp库]https://blog.csdn.net/dtjun_sjtu/article/details/122683547</br>
+[vscode无法识别头文件“cannot open source file “gnu/stubs-64.h“”]https://blog.csdn.net/miraclequan/article/details/122822287
+[Linux下编译安装JsonCpp(1.9.4)最新版本]https://blog.csdn.net/weixin_44290011/article/details/109120478
+https://subingwen.cn/cpp/jsoncpp/#2-jsoncpp-%E7%9A%84%E4%BD%BF%E7%94%A8
 
 
 

@@ -5,6 +5,8 @@ project(PIGG_webserve VERSION 0.1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS -pthread) # 开了创建线程什么的，一定要开这个
 
+# add_compile_options(-fno-elide-constructors) #关闭编译器优化看起来没有什么用
+
 add_definitions(-w) # 忽略警告
 # REQUIRED：可选字段。表示一定要找到包，找不到的话就立即停掉整个CMake。而如果不指定REQUIRED则CMake会继续执行。
 
@@ -33,8 +35,12 @@ source_group(httpserver FILES ${HTTP_SRC_LIST})
 file(GLOB_RECURSE TIMER_SRC_LIST "PIGG_timer/*.cpp" "PIGG_timer/*.h")
 source_group(timerserver FILES ${TIMER_SRC_LIST})
 
+file(GLOB_RECURSE CONFIG_SRC_LIST "PIGG_config/*.cpp" "PIGG_config/*.h")
+source_group(timerserver FILES ${CONFIG_SRC_LIST})
+
 file(GLOB_RECURSE LOCKER_SRC_LIST "PIGG_locker/*.h")
 source_group(lockerserver FILES ${LOCKER_SRC_LIST})
+
 file(GLOB_RECURSE THREAD_SRC_LIST "PIGG_threadpool/*.h")
 source_group(threadserver FILES ${THREAD_SRC_LIST})
 
@@ -44,10 +50,10 @@ add_executable(${PROJECT_NAME}
     ${LOCKER_SRC_LIST}
     ${MYSQL_SRC_LIST}
     ${HTTP_SRC_LIST}
+    ${CONFIG_SRC_LIST}
     ${TIMER_SRC_LIST}
     ${THREAD_SRC_LIST}
     main.cpp
-    PIGG_config.cpp
     PIGG_webserver.cpp
 )
 
@@ -58,6 +64,31 @@ add_executable(${PROJECT_NAME}
 # MySQL
 include_directories(/usr/include/mysql)
 target_link_libraries(${PROJECT_NAME} mysqlclient)
+
+# jsoncpp
+find_package(jsoncpp CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} jsoncpp_static)
+
+
+# include_directories(/usr/local/include/json)
+# target_link_libraries(${PROJECT_NAME} mysqlclient)
+
+# set(jsoncpp_DIR /usr/local/lib/)
+# find_package(jsoncpp REQUIRED)
+# pkg_check_modules(JSONCPP jsoncpp)
+# include_directories(${JSONCPP_LIBRARIES})
+# target_link_libraries(${PROJECT_NAME} ${JSONCPP_LIBRARIES})
+
+
+# set(lib_DIR /usr/lib/x84_64-linux-gnu)
+# link_directories(${lib_DIR})
+# target_link_libraries(${PROJECT_NAME} libjsoncpp.a)
+
+
+# set(lib_DIR /usr/lib/x84_64-linux-gnu)
+# find_package(${lib_DIR})
+# target_link_libraries(${PROJECT_NAME} libjsoncpp.a)
+
 
 # Qt5
 # find_package(Qt5 COMPONENTS Core Network Concurrent REQUIRED) 

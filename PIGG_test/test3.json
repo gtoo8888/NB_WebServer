@@ -1,0 +1,11 @@
+{
+    "test_bool" : false,
+    "test_int" : 1,
+    "test_int64" : 2,
+    "test_uint" : 3,
+    "test_uint64" : 4,
+    "test_float" : 1.23,
+    "test_double" : 4.56,
+    "test_string" : "hello",
+    "test_cstring" : "world"
+}
