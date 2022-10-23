@@ -34,7 +34,7 @@ else
 fi
 
 if [ "$1"x == "start"x ];then # x为了防止变量为空时报错
-    ./build/PIGG_webserve   # 统计代码行数
+    ./bin/release/PIGG_webserve   # 统计代码行数
 else   
     echo "如果需要运行代码: ./build.sh start"
 fi

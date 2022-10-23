@@ -14,11 +14,12 @@ Linux version 5.13.0-48-generic <br/>
 g++ -v -E -x c++ - 
 ## 需要安装的软件
 ```shell
-sudo apt-get install libmysqlclient-dev -y // mysql的头文件
-sudo apt-get install libjsoncpp-dev // jsoncpp的头文件
+sudo apt-get install libmysqlclient-dev -y # mysql的头文件
+sudo apt-get install libjsoncpp-dev # jsoncpp的头文件
 sudo apt-get install cmake -y
-sudo apt-get install g++ -y // gcc可能不全面，导致没有g++
-sudo apt-get install libc6-dev-amd64 // 解决vscode大量找不到头文件问题
+sudo apt-get install g++ -y # gcc可能不全面，导致没有g++
+sudo apt-get install libc6-dev-amd64 # 解决vscode大量找不到头文件问题
+sudo apt-get install uuid-dev # 现在还没有用到
 ```
 
 ## 编译方法

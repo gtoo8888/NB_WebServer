@@ -5,6 +5,8 @@ PIGG_output/
 .vscode/settings.json
 *_ServerLog
 temp.json
+*.jpg
+*.mp4
 
 
 

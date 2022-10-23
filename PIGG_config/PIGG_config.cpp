@@ -4,7 +4,7 @@
 
 bool PIGG_Config::get_json_config(){
     std::fstream ifs;
-    ifs.open("/data_hdd/PIGG_WebServer/PIGG_config/PIGG_webserver_config.json");
+    ifs.open("/data_hdd/PIGG_WebServer/bin/configs/PIGG_webserver_config.json");
     if(!ifs.is_open()){
         printf("json is not exist\n");
         return false;

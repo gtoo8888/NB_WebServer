@@ -100,6 +100,15 @@ void PIGG_WebServer::sql_pool(){
 
     //初始化数据库读取表
     PIGG_http_users->init_mysql_result(PIGG_connPool);
+
+
+    MYSQL* mysql_test;
+    PIGG_connection_RALL mysql_conn(&mysql_test,PIGG_connPool); // 只有使用PIGG_connPool才能取出来
+    // 因为这是一个单例
+
+    if(mysql_query(mysql_test,"select * from user")){
+        // LOG_ERROR("SELECT error:%s\n",mysql_error(mysql));  
+    }
 }
 
 void PIGG_WebServer::thread_pool(){
@@ -316,6 +325,13 @@ void PIGG_WebServer::deal_with_read(int sockfd) {
     //创建定时器临时变量，将该连接对应的定时器取出来
     PIGG_util_timer *timer = PIGG_users_timer[sockfd].PIGG_timer;
 
+    MYSQL* mysql_test;
+    PIGG_connection_RALL mysql_conn(&mysql_test,PIGG_connPool); // 只有使用PIGG_connPool才能取出来
+    // 因为这是一个单例
+    if(mysql_query(mysql_test,"select * from user")){
+        // LOG_ERROR("SELECT error:%s\n",mysql_error(mysql));  
+    }
+
     // reactor
     if(PIGG_actor_model == 1){  // 运行模式
         if(timer){
@@ -337,7 +353,7 @@ void PIGG_WebServer::deal_with_read(int sockfd) {
         if(PIGG_http_users[sockfd].read_once()){//读入对应缓冲区
             LOG_INFO("deal with the client(%s)",inet_ntoa(PIGG_http_users[sockfd].get_address()->sin_addr))
 
-            PIGG_http_users[sockfd].process();  // 这里面进行处理
+            // PIGG_http_users[sockfd].process();  // 这里面进行处理
             PIGG_pool->append_p(PIGG_http_users + sockfd);//若监测到读事件，将该事件放入请求队列
             //若有数据传输，则将定时器往后延迟3个单位
             //对其在链表上的位置进行调整

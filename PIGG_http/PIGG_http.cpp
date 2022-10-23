@@ -195,7 +195,7 @@ bool PIGG_http_conn::write(){
         return true;
     }
     while(1){
-        temp = writev(PIGG_sockfd,PIGG_iv,PIGG_iv_count);
+        temp = writev(PIGG_sockfd,PIGG_iv,PIGG_iv_count);   // 阻塞在这里
         if(temp < 0){
             if(errno == EAGAIN){
                 modfd(PIGG_epollfd,PIGG_sockfd,EPOLLOUT,PIGG_trig_mode);
@@ -216,7 +216,7 @@ bool PIGG_http_conn::write(){
             PIGG_iv[0].iov_len = PIGG_iv[0].iov_len - bytes_have_send;
         }
 
-        if(bytes_have_send <= 0){
+        if(bytes_to_send <= 0){ // 抄成了bytes_have_send
             unmap();
             modfd(PIGG_epollfd,PIGG_sockfd,EPOLLIN,PIGG_trig_mode);
 
@@ -234,6 +234,13 @@ bool PIGG_http_conn::write(){
 // 整个的处理过程
 // EPOLLIN/EPOLLOUT需要再去理解
 void PIGG_http_conn::process(){
+    // MYSQL* mysql_test;
+    // PIGG_connection_RALL mysql_conn(&mysql_test,PIGG_connPool); // 只有使用PIGG_connPool才能取出来
+    // // 因为这是一个单例
+    // if(mysql_query(mysql_test,"select * from user")){
+    //     // LOG_ERROR("SELECT error:%s\n",mysql_error(mysql));  
+    // }
+
     PIGG_HTTP_CODE read_ret = process_read();   // 先把请求读取进来
     if(read_ret == NO_REQUEST){//NO_REQUEST，表示请求不完整，需要继续接收请求数据
         modfd(PIGG_epollfd, PIGG_sockfd, EPOLLIN, PIGG_trig_mode); //注册并监听读事件

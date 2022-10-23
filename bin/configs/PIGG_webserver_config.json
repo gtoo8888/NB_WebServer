@@ -21,3 +21,20 @@
     // "html_root" : "../html_root",    // 调试的时候用,现在用不了了
     "log_queue" : false        // 是否开启日志队列
 }
+
+
+
+// {
+//     "server": {
+//         "port": 9999,
+//         "timeout": 120,
+//         "timerInterval": 5
+//     },
+//     "EventLoopThreadPool":{
+//         "threadNum": 4
+//     },
+//     "log": {
+//         "open": true,
+//         "default_format": "%d{%Y-%m-%d %H:%M:%S}%T%t%T%N%T%T[%p]%T[%c]%T%f:%l%T%m%n"
+//     }
+// }
