@@ -112,23 +112,14 @@ void test_mysql(){
 void test_all(){
     PIGG_init_test::PIGG_test my_test; // 专门用来测试的函数
 
-    // my_test.test_fopen();
-    // my_test.test_stat();
-    // my_test.test_snprintf();
-    // my_test.test_char_get_val();
-    // my_test.test_str_some();
-    // test_mysql();
-    // my_test.test_pthread();
-    // my_test.test_pthread2();
-    // my_test.test_pthread3();
-    // my_test.test_pthread4();
-    // my_test.test_json1_read();
-    // my_test.test_json2_write();
-    my_test.test_json3();
+    // my_test.test_callback1();
+    // my_test.test_callback3();
+    // my_test.test_callback4();
+    my_test.test_callback5();
 }
 
 int main(int argc,char *argv[]){
-    // test_all();
+    test_all();
     PIGG_init_test::PIGG_test my_test; // 专门用来测试的函数
 
     std::string user = "root";
@@ -158,7 +149,7 @@ int main(int argc,char *argv[]){
     server.event_listen();      // socket通讯的基本流程，开始建立通讯
     std::cout << "-----PIGG_WebServer::event_listen()------" << std::endl;
     std::cout << "-----enent_loop()start------" << std::endl;
-    server.event_loop();           // 整个主程序在这里循环
+    // server.event_loop();           // 整个主程序在这里循环
     
 
 
@@ -169,4 +160,11 @@ int main(int argc,char *argv[]){
     
     return 0;
 }
+
+
+
+// int main(int argc,char *argv[]){
+//     test_all();
+//     return 0;
+// }
 

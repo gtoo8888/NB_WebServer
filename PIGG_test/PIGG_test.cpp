@@ -6,6 +6,7 @@
 #include <sys/stat.h>      // stat
 #include <fstream>      
 #include <unistd.h>      
+#include <functional>
 
 namespace PIGG_init_test{
 
@@ -304,6 +305,26 @@ void PIGG_test::test_str_some(){
    printf("|%c| 之后的字符串是 - |%s|\n", ch, ret3);
 }
 
+
+// c++中的前向声明
+// 可以声明一个类而不定义它。这个声明，有时候被称为前向声明(forward declaration)。
+// 在声明之后，定义之前，类Screen是一个不完全类型(incompete type)，
+// 不完全类型只能以有限方式使用，不能定义该类型的对象
+// 不完全类型只能用于定义指向该类型的指针及引用，或者用于声明(而不是定义)使用该类型作为形参类型或返回类型的函数。
+// 前向声明好处是:
+// 不必要的#include   会增加编译时间.
+// 混乱随意的#include可能导致循环#include,可能出现编译错误.
+class A_forward;
+class B_forward{
+public:
+    A_forward* m_a;
+};
+
+// #include "A_forward.h"
+class B{
+public:
+    A_forward* m_a;
+};
 
 
 

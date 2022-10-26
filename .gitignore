@@ -7,6 +7,9 @@ PIGG_output/
 temp.json
 *.jpg
 *.mp4
+bin/release/*
+PIGG_test/threadpool/*.out
+core
 
 
 

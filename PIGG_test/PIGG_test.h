@@ -28,8 +28,11 @@ public:
     void test_char_get_val();
     void test_str_some();
 
-
-
+    void test_callback1();
+    void test_callback2();
+    void test_callback3();
+    void test_callback4();
+    void test_callback5();
 
     void test_pthread();
     void test_pthread2();

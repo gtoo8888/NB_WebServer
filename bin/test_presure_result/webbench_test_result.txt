@@ -1,0 +1,36 @@
+./webbench -c 500 -t  1  http://127.0.0.1:8888/
+Speed=841439 pages/min, 1851168 bytes/sec.
+Requests: 14024 susceed, 0 failed.
+ 
+./webbench -c 5000 -t  1  http://127.0.0.1:8888/
+Speed=801899 pages/min, 1764180 bytes/sec.
+Requests: 13365 susceed, 0 failed.
+ 
+./webbench -c 10000 -t  1  http://127.0.0.1:8888/
+Speed=846539 pages/min, 1862388 bytes/sec.
+Requests: 14109 susceed, 0 failed.
+ 
+./webbench -c 500 -t  5  http://127.0.0.1:8888/
+Speed=825312 pages/min, 1815686 bytes/sec.
+Requests: 68776 susceed, 0 failed.
+ 
+./webbench -c 5000 -t  5  http://127.0.0.1:8888/
+Speed=837000 pages/min, 1841400 bytes/sec.
+Requests: 69750 susceed, 0 failed.
+ 
+./webbench -c 10000 -t  5  http://127.0.0.1:8888/
+Speed=900768 pages/min, 1981689 bytes/sec.
+Requests: 75064 susceed, 0 failed.
+ 
+./webbench -c 500 -t  10  http://127.0.0.1:8888/
+Speed=884760 pages/min, 1946472 bytes/sec.
+Requests: 147460 susceed, 0 failed.
+ 
+./webbench -c 5000 -t  10  http://127.0.0.1:8888/
+Speed=903960 pages/min, 1988712 bytes/sec.
+Requests: 150660 susceed, 0 failed.
+ 
+./webbench -c 10000 -t  10  http://127.0.0.1:8888/
+Speed=890136 pages/min, 1958299 bytes/sec.
+Requests: 148356 susceed, 0 failed.
+ 

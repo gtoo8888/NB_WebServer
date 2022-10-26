@@ -10,12 +10,10 @@
             "group": "build"
         },
         {
-            "label": "clean",
+            "label": "threadpool",
             "type": "shell",
-            "command": "make",
-            "args": [
-                "clean",
-            ],
+            "command": "cd PIGG_test/threadpool && make",
+            "args": [],
         }
         // {
         //     "label": "compile",

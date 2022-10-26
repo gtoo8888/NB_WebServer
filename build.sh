@@ -1,6 +1,8 @@
 #!/bin/bash
 
+ROOT_DIR=$PWD
 OUTPUT=PIGG_output
+RELEASE_FILE=/bin/release/PIGG_webserve
 # 使用makefile编译
 # chmod +x makefile
 # make server
@@ -23,8 +25,8 @@ cd build
 cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=.
 make -j${nproc}
 # make install
-ls -lh PIGG_webserve
-ls -l PIGG_webserve
+ls -lh ${ROOT_DIR}${RELEASE_FILE}
+ls -l ${ROOT_DIR}${RELEASE_FILE}
 cd -
 
 if [ "$1"x == "len"x ];then # x为了防止变量为空时报错
@@ -34,7 +36,7 @@ else
 fi
 
 if [ "$1"x == "start"x ];then # x为了防止变量为空时报错
-    ./bin/release/PIGG_webserve   # 统计代码行数
+    ${ROOT_DIR}${RELEASE_FILE}   # 统计代码行数
 else   
     echo "如果需要运行代码: ./build.sh start"
 fi
