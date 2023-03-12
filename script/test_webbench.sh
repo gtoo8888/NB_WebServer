@@ -3,8 +3,11 @@
 ROOT_DIR=$PWD
 OUT_DIR=/bin/test_presure_result
 
-RES_TEMP_FILE=../1.txt
-RES_FILE_NEMA=webbench_test_result.txt
+RES_TEMP_FILE=../bench_test_tmp.txt
+time=$(date "+%Y%m%d_%H%M%S")
+RES_FILE_NEMA=webbench_res_${time}.txt
+
+echo ${RES_FILE_NEMA}
 
 res_file=${ROOT_DIR}${OUT_DIR}/${RES_FILE_NEMA}
 rm -r ${res_file}
@@ -24,22 +27,22 @@ test_presure_fun(){
     rm -f ${RES_TEMP_FILE}
 }
 
-cd test_presure/webbench-1.5
+cd test/test_presure/webbench-1.5
 
 test_presure_fun 500 1
 test_presure_fun 5000 1
 test_presure_fun 10000 1
-# test_presure_fun 20000 1
+test_presure_fun 30000 1
 
-test_presure_fun 500 5
-test_presure_fun 5000 5
-test_presure_fun 10000 5
-# test_presure_fun 20000 5
+# test_presure_fun 500 5
+# test_presure_fun 5000 5
+# test_presure_fun 10000 5
+# test_presure_fun 30000 5
 
-test_presure_fun 500 10
-test_presure_fun 5000 10
-test_presure_fun 10000 10
-# test_presure_fun 20000 10
+test_presure_fun 500 60
+test_presure_fun 5000 60
+test_presure_fun 10000 60
+test_presure_fun 30000 60
 
 cd -
 

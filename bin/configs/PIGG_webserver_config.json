@@ -1,6 +1,6 @@
 {
-    "user"  : "root",
-    "passwd"  : "root",
+    "user"  : "debian-sys-maint",
+    "passwd"  : "CljM3ZnVZ3n3sycv",
     "databasename"  : "yourdb",
     "port" : 8888,               //端口号,默认8888
     
@@ -15,7 +15,7 @@
     "opt_linger" : false,          //优雅关闭连接，默认不使用
     "sql_num" : 8,            //数据库连接池数量,默认8
     "thread_num" : 1,             //线程池内的线程数量,默认8
-    "close_log" : true,           //关闭日志,默认不关闭,1是开启
+    "close_log" : true,           //关闭日志,默认不关闭,1是开启,日志开关不好用
     "actor_model" : false,         //并发模型,默认是proactor
     "html_root" : "/html_root",    // 这路径不存在导致资源找不到，这个是以执行代码的目录为准
     // "html_root" : "../html_root",    // 调试的时候用,现在用不了了

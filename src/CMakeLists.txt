@@ -40,6 +40,8 @@ add_definitions(-w) # 忽略警告
 
 message(STATUS "CMAKE_MODULE_PATH = ${CMAKE_ROOT}")
 
+# include_directories("src")
+
 file(GLOB_RECURSE LOG_SRC_LIST "PIGG_log/*.cpp" "PIGG_log/*.h")  # 不能写成/PIGG_log/*.cpp这样成了在根目录下寻找
 source_group(logserver FILES ${LOG_SRC_LIST})
 
@@ -89,11 +91,13 @@ target_link_libraries(${PROJECT_NAME} mysqlclient)
 find_package(jsoncpp CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} jsoncpp_static)
 
-SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin/release)   # 设置可执行文件的位置
-SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib/release)      # 设置动态链接库的位置
+# hiredis
+include_directories(/usr/local/include/hiredis)
+# find_package(hiredis CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} hiredis)
 
-# include_directories(/usr/local/include/json)
-# target_link_libraries(${PROJECT_NAME} mysqlclient)
+SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../bin/release)   # 设置可执行文件的位置
+SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../lib/release)      # 设置动态链接库的位置
 
 # set(jsoncpp_DIR /usr/local/lib/)
 # find_package(jsoncpp REQUIRED)

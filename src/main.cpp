@@ -115,11 +115,14 @@ void test_all(){
     // my_test.test_callback1();
     // my_test.test_callback3();
     // my_test.test_callback4();
-    my_test.test_callback5();
+    // my_test.test_callback5();
+
+    my_test.test_redis_command();
+    exit(0); // 仅仅为了跑测试程序
 }
 
 int main(int argc,char *argv[]){
-    test_all();
+    // test_all();
     PIGG_init_test::PIGG_test my_test; // 专门用来测试的函数
 
     std::string user = "root";
@@ -149,7 +152,7 @@ int main(int argc,char *argv[]){
     server.event_listen();      // socket通讯的基本流程，开始建立通讯
     std::cout << "-----PIGG_WebServer::event_listen()------" << std::endl;
     std::cout << "-----enent_loop()start------" << std::endl;
-    // server.event_loop();           // 整个主程序在这里循环
+    server.event_loop();           // 整个主程序在这里循环
     
 
 

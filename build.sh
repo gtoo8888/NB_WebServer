@@ -22,7 +22,7 @@ if [ ! -d build ];then
 fi
 
 cd build
-cmake .. -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=.
+cmake ../src -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=.
 make -j${nproc}
 # make install
 ls -lh ${ROOT_DIR}${RELEASE_FILE}
@@ -30,7 +30,7 @@ ls -l ${ROOT_DIR}${RELEASE_FILE}
 cd -
 
 if [ "$1"x == "len"x ];then # x为了防止变量为空时报错
-    ./getCodeNum.sh   # 统计代码行数
+    ./script/getCodeNum.sh   # 统计代码行数
 else   
     echo "如果需要统计代码行数: ./build.sh len"
 fi

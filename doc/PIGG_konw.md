@@ -78,6 +78,21 @@ Lighttpd是开源的网络服务器软件。它专为资源有限的环境而设
 Nginx是十分轻量级的HTTP服务器，是一个高性能的HTTP和反向代理服务器，Nginx以事件驱动的方式编写，所以有非常好的性能，同时也是一个非常高效的反向代理、负载平衡。
 
 
+
+# hiredis
+git clone git@github.com:redis/hiredis.git
+cd hiredis
+make
+make install
+
+安装到了
+/usr/local/include/hiredis
+/usr/local/lib
+后面链接时候报错：
+确保你的/etc/ld.so.conf里面有 /usr/local/lib 这一行
+sudo ldconfig
+
+
 # 参考资料
 [QPS高并发性能指标及其计算公式]https://blog.csdn.net/xili2532/article/details/120180162
 [一文搞懂高并发性能指标：QPS、TPS、RT、并发数、吞吐量]https://zhuanlan.zhihu.com/p/337708438
@@ -89,6 +104,8 @@ https://www.jianshu.com/p/b57fb501505c
 [Apache、Lighttpd、Nginx 三种web服务器对比]https://www.cnblogs.com/rxbook/p/7085921.html
 [关于C++ 回调函数(callback) 精简且实用]https://blog.csdn.net/zhoupian/article/details/119495949
 [回调函数（callback）是什么？]https://www.zhihu.com/question/19801131
+[Redis C++ API(hiredis)的完整使用教程]https://blog.csdn.net/weixin_44005915/article/details/94936436
+[无法加载libhiredis.so库]https://blog.csdn.net/qq_45434780/article/details/115375309
 
 
 
