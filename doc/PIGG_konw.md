@@ -92,6 +92,17 @@ make install
 确保你的/etc/ld.so.conf里面有 /usr/local/lib 这一行
 sudo ldconfig
 
+# C++ ORM
+SQLiteCpp：一个使用 C++ 编写的轻量级 SQLite3 C++ ORM 库，支持跨平台。
+
+SOCI：一个 C++ 数据库访问库，它可以访问多种类型的数据库，并提供类似于 ORM 的接口。
+
+Qt SQL：一个集成在 Qt 框架中的 SQL 操作库，可以访问多种数据库并提供类似于 ORM 的接口。
+
+ODB：一个跨平台的 C++ ORM 库，支持多种数据库，并提供从 C++ 类型到数据库类型的映射。
+
+cppdb：一个轻量级的 C++ 数据库访问库，可以访问多种数据库，并提供类似于 ORM 的接口。
+
 
 # 参考资料
 [QPS高并发性能指标及其计算公式]https://blog.csdn.net/xili2532/article/details/120180162
